@@ -23,6 +23,7 @@
             android:layout_height="wrap_content"
             android:text="Laatste Transacties"
             android:textAlignment="center"
+            android:gravity="center"
             android:textSize="24sp" />
 
         <RelativeLayout

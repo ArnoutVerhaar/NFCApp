@@ -11,7 +11,7 @@
         android:paddingLeft="30dp"
         android:paddingTop="2dp"
         android:textSize="24sp"
-        android:textStyle="bold"></TextView>
+        android:textStyle="bold"/>
 
     <TextView
         android:id="@+id/prizeView"

@@ -10,8 +10,8 @@
         android:textColor="#D8000000"
         android:textSize="16sp"
         android:textStyle="bold"
-
-        android:paddingStart="10dp"
+        android:text="Mijn naam"
+        android:paddingLeft="10dp"
         android:paddingBottom="0dp" />
 
     <TextView
@@ -21,16 +21,21 @@
         android:textColor="#D8000000"
         android:textSize="12sp"
         android:layout_below="@+id/txtitem"
-        android:paddingStart="10dp"
-        android:layout_alignParentStart="true" />
+        android:text="23-23-43 at 45:33"
+        android:paddingLeft="10dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"/>
 
      <TextView
         android:id="@+id/prizeView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="18sp"
+         android:text="5,50"
          android:layout_marginEnd="52dp"
+         android:layout_marginRight="52dp"
          android:layout_alignBottom="@+id/timestamp"
-         android:layout_alignParentEnd="true" />
+         android:layout_alignParentEnd="true"
+         android:layout_alignParentRight="true"/>
 
 </RelativeLayout>

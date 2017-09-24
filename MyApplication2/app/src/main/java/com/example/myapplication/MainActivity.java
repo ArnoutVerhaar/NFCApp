@@ -483,7 +483,7 @@ public class MainActivity extends AppCompatActivity {
             Button btn = new Button(this);
             btn.setText(drinks.get(i).getName() + "\n\n \u20ac" + String.format(Locale.US, "%.2f",drinks.get(i).getPrize()) + ",-");
             btn.setTag(String.format(Locale.US, "%.2f",drinks.get(i).getPrize()));
-            btn.setBackground(getResources().getDrawable(R.drawable.bestelbutton));
+            btn.setBackgroundResource(R.drawable.bestelbutton);
             btn.setTextColor(Color.WHITE);
             btn.setPadding(30,30,30,30);
             btn.setLayoutParams(p);
