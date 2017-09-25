@@ -28,9 +28,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TableLayout;
@@ -71,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<String> settingsArray;
     public String defEmail = "defaultemail@default.com";
     public String defChipPrijs = "2.00";
+    public ImageAdapter myAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,8 +132,13 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
+
+
         drinks = new ArrayList<Drink>();
         readDrinkfile();
+
+        GridView gridview = (GridView) findViewById(R.id.btnGrid);
+        gridview.setAdapter(myAdapter = new ImageAdapter(this));
 
         users = new ArrayList<Gebruiker>();
         readUserfile();
@@ -422,7 +430,9 @@ public class MainActivity extends AppCompatActivity {
 
         super.onResume();
         readDrinkfile();
-        fillButtons();
+
+        myAdapter.notifyDataSetChanged();
+        //fillButtons();
         readTransactionfile();
         readSettingsfile();
     }
@@ -460,11 +470,12 @@ public class MainActivity extends AppCompatActivity {
         pay = true;
     }
 
-    public void fillButtons(){
-        TableLayout mTable;
-        TableRow tr = new TableRow(this);
+    /*public void fillButtons(){
 
-        mTable = (TableLayout) findViewById(R.id.tableLay);
+        //TableLayout mTable;
+        //TableRow tr = new TableRow(this);
+
+        //mTable = (TableLayout) findViewById(R.id.tableLay);
         mTable.removeAllViews();
         int i =0;
         while (i < drinks.size()) {
@@ -502,7 +513,7 @@ public class MainActivity extends AppCompatActivity {
             i++;
         }
 
-    }
+    }*/
     // DisplayHelper:
     private static Float scale;
     public static int dpToPixel(int dp, Context context) {
@@ -514,4 +525,48 @@ public class MainActivity extends AppCompatActivity {
     private void toast(String msg){
         Toast.makeText(MainActivity.this,msg,Toast.LENGTH_SHORT);
     }
+
+    public class ImageAdapter extends BaseAdapter {
+        private Context mContext;
+
+        public ImageAdapter(Context c) {
+            mContext = c;
+        }
+
+        public int getCount() {
+            return drinks.size();
+        }
+
+        public Object getItem(int position) {
+            return null;
+        }
+
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        // create a new ImageView for each item referenced by the Adapter
+        public View getView(int position, View convertView, ViewGroup parent) {
+            Button myBtn;
+            if (convertView == null) {
+                // if it's not recycled, initialize some attributes
+                myBtn = new Button(mContext);
+                myBtn.setLayoutParams(new GridView.LayoutParams(85, 85));
+                myBtn.setPadding(8, 8, 8, 8);
+
+
+                myBtn.setText(drinks.get(position).getName() + "\n\n \u20ac" + String.format(Locale.US, "%.2f",drinks.get(position).getPrize()) + ",-");
+                myBtn.setTag(String.format(Locale.US, "%.2f",drinks.get(position).getPrize()));
+                myBtn.setBackgroundResource(R.drawable.bestelbutton);
+                myBtn.setTextColor(Color.WHITE);
+                //myBtn.setPadding(30,30,30,30);
+            } else {
+                myBtn = (Button) convertView;
+            }
+
+            myBtn.setBackgroundResource(R.drawable.bestelbutton);
+            return myBtn;
+        }
+    }
 }
+
