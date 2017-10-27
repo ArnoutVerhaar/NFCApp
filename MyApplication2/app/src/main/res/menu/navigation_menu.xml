@@ -2,17 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/nav_payment"
         android:icon="@mipmap/ic_payment_black_24dp"
-        android:title="Payment" />
+        android:title="Betaling" />
     <item android:id="@+id/nav_addprize"
         android:icon="@mipmap/ic_add_circle_black_24dp"
-        android:title="Add Prize" />
+        android:title="Voeg Prijs Toe" />
     <item android:id="@+id/nav_contact"
         android:icon="@mipmap/ic_euro_symbol_black_24dp"
-        android:title="Transactions" />
+        android:title="Transacties" />
     <item android:id="@+id/nav_users"
         android:icon="@mipmap/ic_perm_contact_calendar_black_24dp"
         android:title="Gebruikers" />
     <item android:id="@+id/nav_settings"
         android:icon="@mipmap/ic_settings_black_24dp"
-        android:title="Settings"/>
+        android:title="Instellingen"/>
 </menu>

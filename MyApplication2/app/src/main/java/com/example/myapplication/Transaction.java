@@ -9,11 +9,13 @@ public class Transaction {
     String name;
     Double prize;
     String timestamp;
+    String order;
 
-    public Transaction(String n, Double p, String t){
+    public Transaction(String n, Double p, String t, String o){
         this.name=n;
         this.prize=p;
         this.timestamp=t;
+        this.order=o;
     }
 
     public void setName(String name){
@@ -21,6 +23,10 @@ public class Transaction {
     }
     public void setPrize(Double prize){
         this.prize = prize;
+    }
+
+    public void setOrder(String order) {
+        this.order = order;
     }
 
     public void setTimestamp(String timestamp) {
@@ -33,7 +39,9 @@ public class Transaction {
     public Double getPrize(){
         return prize;
     }
-
+    public String getOrder() {
+        return order;
+    }
     public String getTimestamp() {
         return timestamp;
     }

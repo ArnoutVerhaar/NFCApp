@@ -21,38 +21,22 @@
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Settings:"
+            android:text="Instellingen:"
             android:textAlignment="center"
+            android:gravity="center"
             android:textSize="24sp" />
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/floatingActionButton"
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginBottom="30dp"
-                android:layout_marginEnd="30dp"
-
-                android:clickable="true"
-                android:elevation="10dp"
-                android:onClick="setDefaults"
-                app:backgroundTint="@android:color/black"
-                app:elevation="13dp"
-                app:fabSize="normal"
-                app:srcCompat="@android:drawable/ic_menu_delete" />
-
             <ListView
                 android:id="@+id/translist"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:layout_above="@+id/floatingActionButton" />
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true" />
 
             <TextView
                 android:id="@+id/textView3"
@@ -61,6 +45,20 @@
                 android:text="Gemaakt door: Arnout Verhaar"
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true" />
+
+            <com.melnykov.fab.FloatingActionButton
+                android:id="@+id/setDefaults"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_gravity="bottom|right"
+                android:layout_margin="16dp"
+                android:onClick="setDefaults"
+                android:src="@android:drawable/ic_menu_set_as"
+
+                app:backgroundTint="@android:color/black" />
 
         </RelativeLayout>
 

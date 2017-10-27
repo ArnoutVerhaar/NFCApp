@@ -13,6 +13,7 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.Ndef;
 import android.nfc.tech.NfcA;
+import android.os.Environment;
 import android.os.Parcelable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.NavigationView;
@@ -22,11 +23,15 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -44,13 +49,16 @@ import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -60,6 +68,7 @@ import static java.security.AccessController.getContext;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "MEDIA";
     private DrawerLayout mDrawer;
     private ActionBarDrawerToggle mToggle;
     private Toolbar mToolbar;
@@ -74,6 +83,9 @@ public class MainActivity extends AppCompatActivity {
     public String defEmail = "defaultemail@default.com";
     public String defChipPrijs = "2.00";
     public ImageAdapter myAdapter;
+    public GridView gridview;
+    float dpHeight,dpWidth;
+    ArrayList<String> bestelling;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,14 +149,22 @@ public class MainActivity extends AppCompatActivity {
         drinks = new ArrayList<Drink>();
         readDrinkfile();
 
-        GridView gridview = (GridView) findViewById(R.id.btnGrid);
-        gridview.setAdapter(myAdapter = new ImageAdapter(this));
+        gridview = (GridView) findViewById(R.id.btnGrid);
+        gridview.setAdapter(new ImageAdapter(this));
+
+        bestelling = new ArrayList<String>();
 
         users = new ArrayList<Gebruiker>();
         readUserfile();
+        WriteToUserFile();
+
+
+
+        //write_external_userfile();
 
         transactions= new ArrayList<Transaction>();
         readTransactionfile();
+        //write_external_transactionfile();
 
         settingsArray = new ArrayList<>();
         readSettingsfile();
@@ -169,6 +189,71 @@ public class MainActivity extends AppCompatActivity {
                     Toast.LENGTH_LONG).show();
         }
         users = new ArrayList<Gebruiker>();
+        Display display = getWindowManager().getDefaultDisplay();
+        DisplayMetrics outMetrics = new DisplayMetrics ();
+        display.getMetrics(outMetrics);
+
+        float density  = getResources().getDisplayMetrics().density;
+        dpHeight = outMetrics.heightPixels;
+        dpWidth  = outMetrics.widthPixels;
+    }
+
+    public void write_external_userfile(){
+        File root = android.os.Environment.getExternalStorageDirectory();
+        File dir = new File (root.getAbsolutePath() + "/Documents");
+        dir.mkdirs();
+        File file = new File(dir, "Users.csv");
+        file.delete();
+
+        try {
+            FileOutputStream f = new FileOutputStream(file);
+            PrintWriter pw = new PrintWriter(f);
+            pw.println("Naam;Saldo;IBAN;Email");
+            for(int i =0; i < users.size(); i++){
+                if(users.get(i).getKosten() > 0){
+                    pw.println(users.get(i).getName() + ";" + String.format(Locale.US, "%.2f",users.get(i).getKosten()) + ";" + users.get(i).getIBAN() + ";" + users.get(i).getEmail());
+                }
+            }
+            pw.flush();
+            pw.close();
+            f.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            Log.i("MEDIA", "******* File not found. Did you" +
+                    " add a WRITE_EXTERNAL_STORAGE permission to the   manifest?");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //Toast.makeText(getApplicationContext(),"\n\nFile written to "+file, Toast.LENGTH_SHORT).show();
+    }
+
+    public void write_external_transactionfile(){
+        File root = android.os.Environment.getExternalStorageDirectory();
+        // See http://stackoverflow.com/questions/3551821/android-write-to-sd-card-folder
+
+        File dir = new File (root.getAbsolutePath() + "/Documents");
+        dir.mkdirs();
+        File file = new File(dir, "Transactions.csv");
+        file.delete();
+
+        try {
+            FileOutputStream f = new FileOutputStream(file);
+            PrintWriter pw = new PrintWriter(f);
+            pw.println("Naam;Bedrag;Tijdstip;Bestelling");
+            for(int i =0; i < transactions.size(); i++){
+                pw.println(transactions.get(i).getName() + ";" + String.format(Locale.US, "%.2f",transactions.get(i).getPrize()) + ";" + transactions.get(i).getTimestamp() + ";" + transactions.get(i).getOrder());
+            }
+            pw.flush();
+            pw.close();
+            f.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            Log.i("MEDIA", "******* File not found. Did you" +
+                    " add a WRITE_EXTERNAL_STORAGE permission to the   manifest?");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //Toast.makeText(getApplicationContext(),"\n\nFile written to "+file, Toast.LENGTH_SHORT).show();
     }
 
     private void readSettingsfile() {
@@ -213,6 +298,36 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+    public void read_external_userfile(){
+        File root = android.os.Environment.getExternalStorageDirectory();
+        File dir = new File (root.getAbsolutePath() + "/Documents");
+        File file = new File(dir, "Users.csv");
+
+        if(file.exists()){
+            try{
+                BufferedReader reader = new BufferedReader(new InputStreamReader(openFileInput("users.txt")));
+                String lineFromFile;
+                while ((lineFromFile = reader.readLine())!= null){
+                    StringTokenizer tokens = new StringTokenizer(lineFromFile, ",");
+                    Gebruiker geb;
+                    try {
+                        geb = new Gebruiker(tokens.nextToken(), tokens.nextToken(), tokens.nextToken(), Double.parseDouble(tokens.nextToken()), tokens.nextToken());
+                        users.add(geb);
+                    }
+                    catch (Exception e){
+                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+
+            }catch(IOException e){
+                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
+        //Toast.makeText(getApplicationContext(),"\n\nFile written to "+file, Toast.LENGTH_SHORT).show();
+    }
+
     private void readTransactionfile() {
         transactions.clear();
         File file = getApplicationContext().getFileStreamPath("transactions.txt");
@@ -223,8 +338,15 @@ public class MainActivity extends AppCompatActivity {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(openFileInput("transactions.txt")));
                 while ((lineFromFile = reader.readLine())!= null){
                     StringTokenizer tokens = new StringTokenizer(lineFromFile, ",");
-                    Transaction trans = new Transaction(tokens.nextToken(),Double.parseDouble(tokens.nextToken()), tokens.nextToken());
-                    transactions.add(trans);
+                    try {
+                        Transaction trans = new Transaction(tokens.nextToken(), Double.parseDouble(tokens.nextToken()), tokens.nextToken(), tokens.nextToken());
+                        transactions.add(trans);
+                    }
+                    catch (Exception e){
+                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+
+
                 }
 
             }catch(IOException e){
@@ -237,15 +359,22 @@ public class MainActivity extends AppCompatActivity {
         users.clear();
         File file = getApplicationContext().getFileStreamPath("users.txt");
         //deleteFile("data.txt");
-        String lineFromFile;
+
         if(file.exists()){
             try{
                 BufferedReader reader = new BufferedReader(new InputStreamReader(openFileInput("users.txt")));
-
+                String lineFromFile;
                 while ((lineFromFile = reader.readLine())!= null){
                     StringTokenizer tokens = new StringTokenizer(lineFromFile, ",");
-                    Gebruiker geb = new Gebruiker(tokens.nextToken(),tokens.nextToken(),tokens.nextToken(),Double.parseDouble(tokens.nextToken()), tokens.nextToken());
-                    users.add(geb);
+                    Gebruiker geb;
+                    try {
+                        geb = new Gebruiker(tokens.nextToken(), tokens.nextToken(), tokens.nextToken(), Double.parseDouble(tokens.nextToken()), tokens.nextToken());
+                        users.add(geb);
+                    }
+                    catch (Exception e){
+                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+
                 }
 
             }catch(IOException e){
@@ -312,7 +441,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
                 if(foundUser != null){
-                    WriteTransaction(foundUser,totalPrize);
+                    WriteTransaction(foundUser,totalPrize,false,0.00);
                 }
                 else {
                     createNewUser(uniqueID);
@@ -333,10 +462,13 @@ public class MainActivity extends AppCompatActivity {
 
         // Set an EditText view to get user input
         final EditText name = new EditText(this);
+        name.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
         name.setHint("  Naam");
         final EditText email = new EditText(this);
+        email.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
         email.setHint("  Email");
         final EditText IBAN = new EditText(this);
+        IBAN.setInputType(InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
         IBAN.setHint("  IBAN");
         final CheckBox buyChip = new CheckBox(this);
         buyChip.setText("Koop de chip voor \u20ac"+ settingsArray.get(1) + ",-");
@@ -365,10 +497,11 @@ public class MainActivity extends AppCompatActivity {
                         startBudget = 0.00;
                     }
                     newUser = new Gebruiker(name.getText().toString(), email.getText().toString(), IBAN.getText().toString(), startBudget, uniqueID);
+
                     users.add(newUser);
                     Toast.makeText(getApplicationContext(), "User saved", Toast.LENGTH_SHORT).show();
                     //WriteToUserFile();// Do something with value!
-                    WriteTransaction(newUser,totalPrize);
+                    WriteTransaction(newUser,totalPrize,true,startBudget);
                 }
 
 
@@ -385,17 +518,30 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void WriteTransaction(Gebruiker user, Double prize) {
+    private void WriteTransaction(Gebruiker user, Double prize, Boolean newU,Double chip) {
         //Toast.makeText(getApplicationContext(), user.getName() + " : " + prize.toString(), Toast.LENGTH_SHORT).show();
         SimpleDateFormat s = new SimpleDateFormat("dd-MM-yyyy 'at' HH:mm");
         String format = s.format(new Date());
-
+        String order ="";
+        for(int i =0; i< drinks.size(); i++){
+            int occ = Collections.frequency(bestelling,drinks.get(i).getName());
+            if (occ > 0)
+                order += occ + " " + drinks.get(i).getName() + " en ";
+        }
+        if(newU){
+            order += "1 kaart";
+            prize += chip;
+        }
+        else
+            order =  order.substring(0,order.length()-3);
+        Toast.makeText(getApplicationContext(), order, Toast.LENGTH_SHORT).show();
         user.setKosten(user.getKosten() + totalPrize);
-        transactions.add(0,new Transaction(user.getName(),prize,format));
+        transactions.add(0,new Transaction(user.getName(),prize,format,order));
         WriteToUserFile();
-
+        bestelling.clear();
         totalPrize = 0.00;
         updatePrijs();
+
 
         try{
             FileOutputStream file = openFileOutput("transactions.txt", MODE_PRIVATE);
@@ -403,7 +549,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Added to: " + transactions.get(0).getName(), Toast.LENGTH_SHORT).show();
             for(int i = 0 ; i < transactions.size() ; i++){
 
-                outputFile.write(transactions.get(i).getName() + "," + transactions.get(i).getPrize().toString() + "," + transactions.get(i).getTimestamp() + "\n");
+                outputFile.write(transactions.get(i).getName() + "," + transactions.get(i).getPrize().toString() + "," + transactions.get(i).getTimestamp() +  "," + transactions.get(i).getOrder() + "\n");
             }
             outputFile.flush();
             outputFile.close();
@@ -419,7 +565,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume()
     {
-
+        super.onResume();
         Intent intent = new Intent(this,MainActivity.class);
         intent.addFlags(Intent.FLAG_RECEIVER_REPLACE_PENDING);
 
@@ -428,12 +574,12 @@ public class MainActivity extends AppCompatActivity {
 
         nfcAdapter.enableForegroundDispatch(this,pendingIntent,intentFilter,null);
 
-        super.onResume();
+
         readDrinkfile();
 
-        myAdapter.notifyDataSetChanged();
+        gridview.setAdapter(new ImageAdapter(this));
         //fillButtons();
-        readTransactionfile();
+        //readTransactionfile();
         readSettingsfile();
     }
 
@@ -464,6 +610,8 @@ public class MainActivity extends AppCompatActivity {
         totalPrize = 0.00;
         updatePrijs();
         pay=false;
+        bestelling.clear();
+
     }
 
     public void PayButton(View v){
@@ -547,22 +695,38 @@ public class MainActivity extends AppCompatActivity {
 
         // create a new ImageView for each item referenced by the Adapter
         public View getView(int position, View convertView, ViewGroup parent) {
-            Button myBtn;
+            final Button myBtn;
             if (convertView == null) {
                 // if it's not recycled, initialize some attributes
                 myBtn = new Button(mContext);
-                myBtn.setLayoutParams(new GridView.LayoutParams(85, 85));
-                myBtn.setPadding(8, 8, 8, 8);
+
+                myBtn.setLayoutParams(new GridView.LayoutParams((int)(dpWidth / 3 - 5)
+                        , (int)dpHeight / 6));
+                myBtn.setPadding(4, 4, 4, 4);
+
 
 
                 myBtn.setText(drinks.get(position).getName() + "\n\n \u20ac" + String.format(Locale.US, "%.2f",drinks.get(position).getPrize()) + ",-");
                 myBtn.setTag(String.format(Locale.US, "%.2f",drinks.get(position).getPrize()));
                 myBtn.setBackgroundResource(R.drawable.bestelbutton);
                 myBtn.setTextColor(Color.WHITE);
+                myBtn.setTextSize(12);
+                myBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // TODO Auto-generated method stub
+                        totalPrize += Double.parseDouble(v.getTag().toString());
+                        updatePrijs();
+                        bestelling.add(myBtn.getText().toString().split("\n")[0]);
+
+                        //System.out.println("v.getid is:- " + v.getId());
+                    }
+                });
                 //myBtn.setPadding(30,30,30,30);
             } else {
                 myBtn = (Button) convertView;
             }
+
 
             myBtn.setBackgroundResource(R.drawable.bestelbutton);
             return myBtn;

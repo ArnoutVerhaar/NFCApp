@@ -162,6 +162,7 @@ public class SecondActivity extends AppCompatActivity {
         // Set an EditText view to get user input
         final EditText name = new EditText(this);
         name.setHint("  Naam");
+        name.setInputType(InputType.TYPE_TEXT_FLAG_CAP_WORDS);
         final EditText prijs = new EditText(this);
         prijs.setHint("  Prijs");
         prijs.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED);
@@ -257,6 +258,7 @@ public class SecondActivity extends AppCompatActivity {
                             // Set an EditText view to get user input
                             final EditText name = new EditText(SecondActivity.this);
                             name.setText(drinks.get(i).getName());
+                            name.setInputType(InputType.TYPE_TEXT_FLAG_CAP_WORDS);
                             final EditText prijs = new EditText(SecondActivity.this);
                             prijs.setText(String.format(Locale.US,"%.2f",drinks.get(i).getPrize()));
                             prijs.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED);

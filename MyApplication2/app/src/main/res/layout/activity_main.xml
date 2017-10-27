@@ -27,8 +27,8 @@
             <Button
                 android:id="@+id/payButton"
                 style="@style/Base.Widget.AppCompat.Button.Colored"
-                android:layout_width="118dp"
-                android:layout_height="62dp"
+                android:layout_width="108dp"
+                android:layout_height="52dp"
                 android:layout_marginBottom="8dp"
                 android:layout_marginRight="8dp"
                 android:background="@drawable/mybutton"
@@ -38,13 +38,15 @@
                 android:textSize="24sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                android:layout_marginEnd="8dp" />
+                android:layout_marginEnd="8dp"
+                tools:layout_editor_absoluteY="451dp"
+                tools:layout_editor_absoluteX="268dp" />
 
             <TextView
                 android:id="@+id/prijsView"
                 android:layout_width="276dp"
                 android:layout_height="61dp"
-                android:layout_marginTop="39dp"
+                android:layout_marginTop="16dp"
                 android:background="@drawable/rounded_corner"
                 android:padding="10dp"
                 android:text="Prijs:        €0,00,-"
@@ -53,7 +55,6 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintHorizontal_bias="0.504"
                 android:layout_marginRight="8dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginStart="8dp"
@@ -73,23 +74,22 @@
 
             <GridView
                 android:id="@+id/btnGrid"
-                android:layout_width="318dp"
-                android:layout_height="379dp"
+                android:layout_width="319dp"
+                android:layout_height="227dp"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="24dp"
+                android:columnWidth="100dp"
+                android:gravity="center"
+                android:horizontalSpacing="5dp"
+                android:numColumns="auto_fit"
+                android:scrollbars="vertical"
+                android:stretchMode="columnWidth"
+                android:verticalSpacing="5dp"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/prijsView"
-                tools:layout_editor_absoluteY="114dp"
-                tools:layout_editor_absoluteX="78dp"
-                android:columnWidth="100dp"
-                android:numColumns="auto_fit"
-                android:verticalSpacing="5dp"
-                android:horizontalSpacing="5dp"
-                android:stretchMode="columnWidth"
-                android:gravity="center"
-                />
+
+                app:layout_constraintTop_toBottomOf="@+id/prijsView" />
 
         </android.support.constraint.ConstraintLayout>
 

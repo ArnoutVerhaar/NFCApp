@@ -5,6 +5,10 @@ import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -94,19 +98,20 @@ public class MainFrameController {
     }
 
     private void ReadXLSXFile(File file){
-        try {
-            XSSFWorkbook wb = new XSSFWorkbook(new FileInputStream(file));
-            XSSFSheet sheet = wb.getSheetAt(0);
-            XSSFRow row;
-            XSSFCell cell;
 
+
+        try {
+            InputStream inputFS = new FileInputStream(file);
+            Workbook workbook = WorkbookFactory.create(inputFS);
+            /*Sheet sheet = workbook.getSheetAt(0);
+            Row row;
             Iterator rows = sheet.rowIterator();
             row = sheet.getRow(0);
             if(row.getCell(0).getCellType() == HSSFCell.CELL_TYPE_STRING)
-                System.out.println(row.getCell(0).getStringCellValue());
+                System.out.println(row.getCell(0).getStringCellValue());*/
 
 
-        }catch (IOException e) {
+        }catch (Exception e) {
             System.out.println(e);
         }
 

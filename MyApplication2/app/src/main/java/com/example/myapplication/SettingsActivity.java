@@ -186,8 +186,8 @@ public class SettingsActivity extends AppCompatActivity {
     public void setDefaults(View v){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        builder.setTitle("Set Defaults?");
-        builder.setMessage("All appdefaults will be set!");
+        builder.setTitle("Terugzetten Standaardinstellingen?");
+        builder.setMessage("Alle standaardwaardes worden gereset!");
 
         builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
 
@@ -259,8 +259,9 @@ public class SettingsActivity extends AppCompatActivity {
                     switch (i) {
                         case 0:
                             AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
-                            builder.setTitle("Verander defaultEmail!");
+                            builder.setTitle("Verander standaard Email!");
                             final EditText email = new EditText(SettingsActivity.this);
+                            email.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                             email.setText(settingsArray.get(0));
                             LinearLayout layout = new LinearLayout(getApplicationContext());
                             layout.setOrientation(LinearLayout.VERTICAL);
@@ -284,7 +285,7 @@ public class SettingsActivity extends AppCompatActivity {
                             return;
                         case 1:
                             AlertDialog.Builder alert = new AlertDialog.Builder(SettingsActivity.this);
-                            alert.setTitle("Verander chipPrijs!");
+                            alert.setTitle("Verander chipprijs!");
                             final EditText prize = new EditText(SettingsActivity.this);
                             prize.setText(settingsArray.get(1));
                             prize.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED);

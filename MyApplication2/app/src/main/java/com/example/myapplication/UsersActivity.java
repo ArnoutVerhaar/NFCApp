@@ -122,19 +122,33 @@ public class UsersActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         builder.setTitle("Delete Data?");
-        builder.setMessage("Are you sure? All data will be lost!!!");
+        builder.setMessage("Weet je het zeker? Alle transacties worden verwijderd! \n\nTyp 'VERWIJDER' om door te gaan!");
+        final EditText removetext = new EditText(this);
+        removetext.setHint("Typ hier");
+        LinearLayout layout = new LinearLayout(getApplicationContext());
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.addView(removetext);
+        builder.setView(layout);
+
+
 
         builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
 
             public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(getApplicationContext(), "Data is deleted!", Toast.LENGTH_SHORT).show();
-                deleteFile("transactions.txt");
-                for(int i =0; i < users.size(); i++){
-                    users.get(i).setKosten(0.00);
+
+                if(removetext.getText().toString().equals("VERWIJDER")) {
+                    Toast.makeText(getApplicationContext(), "Data is verwijderd!", Toast.LENGTH_SHORT).show();
+                    deleteFile("transactions.txt");
+                    for (int i = 0; i < users.size(); i++) {
+                        users.get(i).setKosten(0.00);
+                    }
+                    WriteToUserFile();
+                    customAdapter.notifyDataSetChanged();
+                    dialog.dismiss();
                 }
-                WriteToUserFile();
-                customAdapter.notifyDataSetChanged();
-                dialog.dismiss();
+                else{
+                    Toast.makeText(getApplicationContext(), "Text kwam niet overeen. Data niet verwijderd!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -244,12 +258,13 @@ public class UsersActivity extends AppCompatActivity {
                             // Set an EditText view to get user input
                             final EditText name = new EditText(UsersActivity.this);
                             name.setText(users.get(i).getName());
+                            name.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
                             final EditText email = new EditText(UsersActivity.this);
                             email.setText(users.get(i).getEmail());
+                            email.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                             final EditText IBAN = new EditText(UsersActivity.this);
                             IBAN.setText(users.get(i).getIBAN());
-
-
+                            IBAN.setInputType(InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
 
                             LinearLayout layout = new LinearLayout(getApplicationContext());
                             layout.setOrientation(LinearLayout.VERTICAL);
