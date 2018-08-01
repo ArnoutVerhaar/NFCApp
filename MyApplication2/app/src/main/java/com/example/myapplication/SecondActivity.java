@@ -175,10 +175,13 @@ public class SecondActivity extends AppCompatActivity {
 
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                Drink myDrink = new Drink(name.getText().toString(),Double.parseDouble(prijs.getText().toString()));
-                drinks.add(myDrink);
-                customAdapter.notifyDataSetChanged();
-                WriteToFile();// Do something with value!
+
+                if(prijs.getText().toString() != "" && name.getText().toString() != "") {
+                    Drink myDrink = new Drink((name.getText().toString()).replace("'", ""), Double.parseDouble(prijs.getText().toString()));
+                    drinks.add(myDrink);
+                    customAdapter.notifyDataSetChanged();
+                    WriteToFile();// Do something with value!
+                }
 
             }
         });

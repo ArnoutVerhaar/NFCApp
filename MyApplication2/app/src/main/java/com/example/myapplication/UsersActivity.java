@@ -39,8 +39,8 @@ public class UsersActivity extends AppCompatActivity {
     private DrawerLayout mDrawer;
     private ActionBarDrawerToggle mToggle;
     public android.support.v7.widget.Toolbar mToolbar;
-    ArrayList<Gebruiker> users;
     UserAdapter customAdapter = new UserAdapter();
+    Cleaner cl = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -98,10 +98,9 @@ public class UsersActivity extends AppCompatActivity {
         });
 
         final ListView listview = (ListView)findViewById(R.id.translist) ;
+        cl = new Cleaner(getApplicationContext());
 
-
-        users = new ArrayList<Gebruiker>();
-        readUserfile();
+        cl.readUserFile();
 
         listview.setAdapter(customAdapter);
         customAdapter.notifyDataSetChanged();
@@ -138,11 +137,8 @@ public class UsersActivity extends AppCompatActivity {
 
                 if(removetext.getText().toString().equals("VERWIJDER")) {
                     Toast.makeText(getApplicationContext(), "Data is verwijderd!", Toast.LENGTH_SHORT).show();
-                    deleteFile("transactions.txt");
-                    for (int i = 0; i < users.size(); i++) {
-                        users.get(i).setKosten(0.00);
-                    }
-                    WriteToUserFile();
+                    cl.deleteTransactions();
+                    cl.clearUsers();
                     customAdapter.notifyDataSetChanged();
                     dialog.dismiss();
                 }
@@ -151,7 +147,6 @@ public class UsersActivity extends AppCompatActivity {
                 }
             }
         });
-
         builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
 
             @Override
@@ -169,53 +164,15 @@ public class UsersActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        readUserfile();
+        cl.readUserFile();
         customAdapter.notifyDataSetChanged();
-    }
-
-    public void WriteToUserFile(){
-        try{
-            FileOutputStream file = openFileOutput("users.txt", MODE_PRIVATE);
-            OutputStreamWriter outputFile = new OutputStreamWriter(file);
-            for(int i = 0; i < users.size() ; i++){
-                outputFile.write(users.get(i).getName() + "," + users.get(i).getEmail()+ "," + users.get(i).getIBAN() + ","+ users.get(i).getKosten().toString() + "," + users.get(i).getUniqueToken() + "\n");
-            }
-            outputFile.flush();
-            outputFile.close();
-
-
-        }catch(IOException e){
-            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-        }
-    }
-
-
-    private void readUserfile() {
-        users.clear();
-        File file = getApplicationContext().getFileStreamPath("users.txt");
-        //deleteFile("data.txt");
-        String lineFromFile;
-        if(file.exists()){
-            try{
-                BufferedReader reader = new BufferedReader(new InputStreamReader(openFileInput("users.txt")));
-
-                while ((lineFromFile = reader.readLine())!= null){
-                    StringTokenizer tokens = new StringTokenizer(lineFromFile, ",");
-                    Gebruiker geb = new Gebruiker(tokens.nextToken(),tokens.nextToken(),tokens.nextToken(),Double.parseDouble(tokens.nextToken()), tokens.nextToken());
-                    users.add(geb);
-                }
-
-            }catch(IOException e){
-                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        }
     }
 
     class UserAdapter extends BaseAdapter {
 
         @Override
         public int getCount() {
-            return users.size();
+            return cl.users.size();
         }
 
         @Override
@@ -234,8 +191,8 @@ public class UsersActivity extends AppCompatActivity {
             TextView tname = (TextView)view.findViewById(R.id.txtitem);
             TextView tprize = (TextView)view.findViewById(R.id.prizeView);
 
-            tname.setText(users.get(i).getName());
-            tprize.setText("€" + String.format(Locale.US, "%.2f",users.get(i).getKosten()) + ",-");
+            tname.setText(cl.users.get(i).getName());
+            tprize.setText("€" + String.format(Locale.US, "%.2f",cl.users.get(i).getKosten()) + ",-");
 
 
 
@@ -243,8 +200,8 @@ public class UsersActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(UsersActivity.this);
-                    builder.setMessage("Email: " + users.get(i).getEmail() + "\nIBAN: " +  users.get(i).getIBAN() + "\nSaldo: €" + String.format(Locale.US, "%.2f",users.get(i).getKosten()) + ",-")
-                            .setTitle(users.get(i).getName());
+                    builder.setMessage("Email: " + cl.users.get(i).getEmail() + "\nIBAN: " +  cl.users.get(i).getIBAN() + "\nSaldo: €" + String.format(Locale.US, "%.2f",cl.users.get(i).getKosten()) + ",-")
+                            .setTitle(cl.users.get(i).getName());
 
                     builder.setNegativeButton("Edit", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
@@ -257,13 +214,13 @@ public class UsersActivity extends AppCompatActivity {
 
                             // Set an EditText view to get user input
                             final EditText name = new EditText(UsersActivity.this);
-                            name.setText(users.get(i).getName());
+                            name.setText(cl.users.get(i).getName());
                             name.setInputType(InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
                             final EditText email = new EditText(UsersActivity.this);
-                            email.setText(users.get(i).getEmail());
+                            email.setText(cl.users.get(i).getEmail());
                             email.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
                             final EditText IBAN = new EditText(UsersActivity.this);
-                            IBAN.setText(users.get(i).getIBAN());
+                            IBAN.setText(cl.users.get(i).getIBAN());
                             IBAN.setInputType(InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
 
                             LinearLayout layout = new LinearLayout(getApplicationContext());
@@ -275,11 +232,11 @@ public class UsersActivity extends AppCompatActivity {
 
                             alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
-                                    users.get(i).setName(name.getText().toString());
-                                    users.get(i).setEmail(email.getText().toString());
-                                    users.get(i).setIBAN(IBAN.getText().toString());
+                                    cl.users.get(i).setName(name.getText().toString());
+                                    cl.users.get(i).setEmail(email.getText().toString());
+                                    cl.users.get(i).setIBAN(IBAN.getText().toString());
                                     customAdapter.notifyDataSetChanged();
-                                    WriteToUserFile();// Do something with value!
+                                    cl.WriteToUserFile();// Do something with value!
 
                                 }
                             });
@@ -295,10 +252,10 @@ public class UsersActivity extends AppCompatActivity {
                     });
                     builder.setNeutralButton("Remove", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            if(users.get(i).getKosten() == 0.00){
-                                users.remove(i);
+                            if(cl.users.get(i).getKosten() == 0.00){
+                                cl.users.remove(i);
                                 customAdapter.notifyDataSetChanged();
-                                WriteToUserFile();// Do something with value!
+                                cl.WriteToUserFile();// Do something with value!
                             }
                             else{
                                 Toast.makeText(getApplicationContext(), "Saldo niet €0,-", Toast.LENGTH_SHORT).show();
