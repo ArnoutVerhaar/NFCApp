@@ -118,6 +118,8 @@ public class UsersActivity extends AppCompatActivity {
 
     public void ClearData(View v){
 
+        //cl.read_external_userfile();
+        //customAdapter.notifyDataSetChanged();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         builder.setTitle("Delete Data?");

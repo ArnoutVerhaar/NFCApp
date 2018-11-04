@@ -55,6 +55,9 @@ import java.util.Locale;
 import java.util.StringTokenizer;
 import java.util.concurrent.ExecutionException;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSession;
 import javax.xml.transform.Result;
 
 /**
@@ -169,15 +172,37 @@ public class ThirdActivity extends AppCompatActivity {
 
     public void sendMail(View v){
 
-        //cl.ReadUserFile();
         cl.readTransactionfile();
         cl.readUserFile();
 
-        //write_external_transactionfile();
-        //write_external_userfile();
+        //cl.write_external_transactionfile();
+        //cl.write_external_userfile();
         findViewById(R.id.sendmail).setEnabled(false);
         JSONObject json = createJSONobject(cl.users,cl.transactions);
-        Log.d("Response:", String.valueOf(cl.users.size()));
+            /*File root = android.os.Environment.getExternalStorageDirectory();
+            // See http://stackoverflow.com/questions/3551821/android-write-to-sd-card-folder
+
+            File dir = new File (root.getAbsolutePath() + "/Documents");
+            dir.mkdirs();
+            File file = new File(dir, "json.txt");
+            file.delete();
+
+            try {
+                FileOutputStream f = new FileOutputStream(file);
+                PrintWriter pw = new PrintWriter(f);
+                pw.println("Naam;Bedrag;Tijdstip;Bestelling");
+                pw.print(json.toString());
+                pw.flush();
+                pw.close();
+                f.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                Log.i("MEDIA", "******* File not found. Did you" +
+                        " add a WRITE_EXTERNAL_STORAGE permission to the   manifest?");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }*/
+        Log.d("Response:", String.valueOf(cl.transactions.size()));
         AsyncT asyncT = new AsyncT(json, new AsyncResponse() {
             @Override
             public void processFinish(Object output) {

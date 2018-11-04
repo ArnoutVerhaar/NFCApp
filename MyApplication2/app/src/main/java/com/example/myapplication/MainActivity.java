@@ -1,70 +1,48 @@
 package com.example.myapplication;
 
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
-import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
-import android.nfc.tech.Ndef;
-import android.nfc.tech.NfcA;
-import android.os.Environment;
-import android.os.Parcelable;
-import android.support.constraint.ConstraintLayout;
+import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.RandomAccessFile;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.StringTokenizer;
-
-import static java.security.AccessController.getContext;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -144,6 +122,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         cl = new Cleaner(getApplicationContext());
+        //cl.WriteToUserFile();
+
 
         drinks = new ArrayList<Drink>();
         readDrinkfile();
@@ -153,9 +133,9 @@ public class MainActivity extends AppCompatActivity {
 
         bestelling = new ArrayList<String>();
 
-        cl.readUserFile();
-        cl.WriteToUserFile();
-        cl.readTransactionfile();
+        //cl.readUserFile();
+        //cl.WriteToUserFile();
+        //cl.readTransactionfile();
 
         settingsArray = new ArrayList<>();
         readSettingsfile();
@@ -187,6 +167,8 @@ public class MainActivity extends AppCompatActivity {
         float density  = getResources().getDisplayMetrics().density;
         dpHeight = outMetrics.heightPixels;
         dpWidth  = outMetrics.widthPixels;
+
+        cl.write_external_userfile();
     }
 
     private void readSettingsfile() {
@@ -317,6 +299,7 @@ public class MainActivity extends AppCompatActivity {
         layout.addView(buyChip);
         alert.setView(layout);
 
+
         alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 //fragment_obj.outputList.setText("For: " + name.getText().toString() + " with email = " + email.getText().toString());
@@ -335,9 +318,9 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "User saved", Toast.LENGTH_SHORT).show();
                     //WriteToUserFile();// Do something with value!
                     WriteTransaction(newUser,totalPrize,true,startBudget);
+                }else{
+                    Toast.makeText(getApplicationContext(), "Something went wrong. Try Again!!!", Toast.LENGTH_SHORT).show();
                 }
-
-
             }
         });
 

@@ -1,30 +1,12 @@
 package com.example.myapplication;
 
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.NavigationView;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.text.InputType;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -34,8 +16,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.StringTokenizer;
-
-import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by arnou on 20-2-2018.
@@ -84,16 +64,27 @@ public class Cleaner {
         File file = fileContext.getApplicationContext().getFileStreamPath("users.txt");
         //deleteFile("data.txt");
         String lineFromFile;
+        String naam = "";
         if(file.exists()){
             try{
                 BufferedReader reader = new BufferedReader(new InputStreamReader(fileContext.getApplicationContext().openFileInput("users.txt")));
-
+                int counter = 0;
                 while ((lineFromFile = reader.readLine())!= null){
                     StringTokenizer tokens = new StringTokenizer(lineFromFile, ",");
-                    Gebruiker geb = new Gebruiker(tokens.nextToken(),tokens.nextToken(),tokens.nextToken(),Double.parseDouble(tokens.nextToken()), tokens.nextToken());
-                    users.add(geb);
-                }
+                    try {
+                        naam = tokens.nextToken();
+                        String email = tokens.nextToken();
+                        String IBAN = tokens.nextToken();
+                        Double Kosten = Double.parseDouble(tokens.nextToken());
+                        String uniqueToken = tokens.nextToken();
 
+                        Gebruiker geb = new Gebruiker(naam, email, IBAN, Kosten, uniqueToken);
+                        users.add(geb);
+                    }catch(NumberFormatException e){
+                        Toast.makeText(fileContext.getApplicationContext(), "failed to parse user: " + naam, Toast.LENGTH_SHORT).show();
+                    }
+                    counter++;
+                }
             }catch(IOException e){
                 e.printStackTrace();
             }
@@ -126,6 +117,7 @@ public class Cleaner {
     }
 
     public void write_external_userfile(){
+        readUserFile();
         File root = android.os.Environment.getExternalStorageDirectory();
         File dir = new File (root.getAbsolutePath() + "/Documents");
         dir.mkdirs();
@@ -135,15 +127,17 @@ public class Cleaner {
         try {
             FileOutputStream f = new FileOutputStream(file);
             PrintWriter pw = new PrintWriter(f);
-            pw.println("Naam;Saldo;IBAN;Email");
+            pw.println("Naam;Saldo;IBAN;Email;UniqueToken");
+            Toast.makeText(this.fileContext.getApplicationContext(), Integer.toString(users.size()), Toast.LENGTH_SHORT).show();
             for(int i =0; i < users.size(); i++){
-                if(users.get(i).getKosten() > 0){
-                    pw.println(users.get(i).getName() + ";" + String.format(Locale.US, "%.2f",users.get(i).getKosten()) + ";" + users.get(i).getIBAN() + ";" + users.get(i).getEmail());
-                }
+                //if(users.get(i).getKosten() > 0){
+                    pw.println(users.get(i).getName() + ";" + String.format(Locale.US, "%.2f",users.get(i).getKosten()) + ";" + users.get(i).getIBAN() + ";" + users.get(i).getEmail() + ";" + users.get(i).getUniqueToken());
+                //}
             }
             pw.flush();
             pw.close();
             f.close();
+            Toast.makeText(this.fileContext.getApplicationContext(),"\n\nFile written to "+file, Toast.LENGTH_SHORT).show();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             Log.i("MEDIA", "******* File not found. Did you" +
@@ -151,7 +145,7 @@ public class Cleaner {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //Toast.makeText(getApplicationContext(),"\n\nFile written to "+file, Toast.LENGTH_SHORT).show();
+
     }
     public void write_external_transactionfile(){
         File root = android.os.Environment.getExternalStorageDirectory();
@@ -182,27 +176,38 @@ public class Cleaner {
         //Toast.makeText(getApplicationContext(),"\n\nFile written to "+file, Toast.LENGTH_SHORT).show();
     }
 
+
     public void read_external_userfile(){
         File root = android.os.Environment.getExternalStorageDirectory();
         File dir = new File (root.getAbsolutePath() + "/Documents");
         File file = new File(dir, "Users.csv");
+        users.clear();
 
         if(file.exists()){
             try{
-                BufferedReader reader = new BufferedReader(new InputStreamReader(fileContext.getApplicationContext().openFileInput("users.txt")));
+                FileInputStream is = new FileInputStream(file);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
                 String lineFromFile;
+                reader.readLine();
                 while ((lineFromFile = reader.readLine())!= null){
-                    StringTokenizer tokens = new StringTokenizer(lineFromFile, ",");
+                    Log.i("MEDIA", lineFromFile);
+                    StringTokenizer tokens = new StringTokenizer(lineFromFile, ";");
                     Gebruiker geb;
                     try {
-                        geb = new Gebruiker(tokens.nextToken(), tokens.nextToken(), tokens.nextToken(), Double.parseDouble(tokens.nextToken()), tokens.nextToken());
+
+                        String naam = tokens.nextToken();
+                        Double kosten = Double.parseDouble(tokens.nextToken());
+                        String IBAN = tokens.nextToken();
+                        String email = tokens.nextToken();
+                        String uniqueToken = tokens.nextToken();
+                        geb = new Gebruiker(naam, email, IBAN, kosten, uniqueToken);
                         users.add(geb);
                     }
                     catch (Exception e){
                         e.printStackTrace();
                     }
-
                 }
+                WriteToUserFile();
 
             }catch(IOException e){
                 e.printStackTrace();

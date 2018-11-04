@@ -75,10 +75,10 @@
             <GridView
                 android:id="@+id/btnGrid"
                 android:layout_width="319dp"
-                android:layout_height="227dp"
+                android:layout_height="339dp"
                 android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
                 android:layout_marginTop="24dp"
+                android:layout_marginRight="8dp"
                 android:columnWidth="100dp"
                 android:gravity="center"
                 android:horizontalSpacing="5dp"
@@ -89,7 +89,7 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
 
-                app:layout_constraintTop_toBottomOf="@+id/prijsView" />
+                app:layout_constraintTop_toBottomOf="@+id/prijsView"/>
 
         </android.support.constraint.ConstraintLayout>
 
