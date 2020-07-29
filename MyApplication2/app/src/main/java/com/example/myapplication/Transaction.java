@@ -10,12 +10,14 @@ public class Transaction {
     Double prize;
     String timestamp;
     String order;
+    String email;
 
-    public Transaction(String n, Double p, String t, String o){
+    public Transaction(String n, String e, Double p, String t, String o){
         this.name=n;
         this.prize=p;
         this.timestamp=t;
         this.order=o;
+        this.email=e;
     }
 
     public void setName(String name){
@@ -24,14 +26,13 @@ public class Transaction {
     public void setPrize(Double prize){
         this.prize = prize;
     }
-
     public void setOrder(String order) {
         this.order = order;
     }
-
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
+    public void setEmail(String email){ this.email = email;}
 
     public String getName(){
         return name;
@@ -44,5 +45,8 @@ public class Transaction {
     }
     public String getTimestamp() {
         return timestamp;
+    }
+    public String getEmail() {
+        return email;
     }
 }

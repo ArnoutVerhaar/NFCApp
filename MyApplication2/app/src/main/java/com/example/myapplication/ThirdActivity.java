@@ -211,11 +211,11 @@ public class ThirdActivity extends AppCompatActivity {
                 cl.deleteTransactions();
                 cl.clearUsers();
                 findViewById(R.id.sendmail).setEnabled(true);
-                Toast.makeText(getApplicationContext(),"Verzenden geslaagd!" , Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),"Verzenden geslaagd!" , Toast.LENGTH_LONG).show();
                 customAdapter.notifyDataSetChanged();
             }
             else{
-                Toast.makeText(getApplicationContext(), str , Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), str , Toast.LENGTH_LONG).show();
             }
             Log.d("Response:", (String) output);
             }
@@ -259,15 +259,18 @@ public class ThirdActivity extends AppCompatActivity {
         JSONObject myJson = new JSONObject();
         JSONArray userArray = new JSONArray();
         for (Gebruiker user : clUsers) {
-            JSONObject myUser = new JSONObject();
-            try {
-                myUser.put("naam", user.getName());
-                myUser.put("email", user.getEmail());
-                myUser.put("iban", user.getIBAN());
-                myUser.put("price", user.getKosten());
-                userArray.put(myUser);
-            }catch (JSONException e){
-                e.printStackTrace();
+            if(user.getKosten() > 0){
+                JSONObject myUser = new JSONObject();
+                try {
+                    myUser.put("naam", user.getName());
+                    myUser.put("email", user.getEmail());
+                    myUser.put("iban", user.getIBAN());
+                    myUser.put("price", user.getKosten());
+                    myUser.put("uniqueToken", user.getUniqueToken());
+                    userArray.put(myUser);
+                }catch (JSONException e){
+                    e.printStackTrace();
+                }
             }
         }
         JSONArray transactionArray = new JSONArray();
@@ -278,6 +281,7 @@ public class ThirdActivity extends AppCompatActivity {
                 myTrans.put("order", trans.getOrder().replace("'",""));
                 myTrans.put("price", trans.getPrize());
                 myTrans.put("timestamp", trans.getTimestamp());
+                myTrans.put("email", trans.getEmail());
                 transactionArray.put(myTrans);
             }catch (JSONException e){
                 e.printStackTrace();

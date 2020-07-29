@@ -31,6 +31,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.security.ProviderInstaller;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -70,6 +72,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mToolbar = (Toolbar) findViewById(R.id.nav_action);
         setSupportActionBar(mToolbar);
+
+        try{
+            ProviderInstaller.installIfNeeded(getApplicationContext());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         mToggle = new ActionBarDrawerToggle(this, mDrawer,R.string.open,R.string.close);
@@ -122,9 +130,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         cl = new Cleaner(getApplicationContext());
+        //cl.read_external_userfile();
         //cl.WriteToUserFile();
-
-
         drinks = new ArrayList<Drink>();
         readDrinkfile();
 
@@ -133,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
 
         bestelling = new ArrayList<String>();
 
-        //cl.readUserFile();
+        cl.readUserFile();
         //cl.WriteToUserFile();
         //cl.readTransactionfile();
 
@@ -168,7 +175,8 @@ public class MainActivity extends AppCompatActivity {
         dpHeight = outMetrics.heightPixels;
         dpWidth  = outMetrics.widthPixels;
 
-        cl.write_external_userfile();
+        //cl.write_external_userfile();
+
     }
 
     private void readSettingsfile() {
@@ -353,7 +361,7 @@ public class MainActivity extends AppCompatActivity {
             order =  order.substring(0,order.length()-3);
         Toast.makeText(getApplicationContext(), order, Toast.LENGTH_SHORT).show();
         user.setKosten(user.getKosten() + totalPrize);
-        cl.transactions.add(0,new Transaction(user.getName(),prize,format,order));
+        cl.transactions.add(0,new Transaction(user.getName(), user.getEmail(), prize,format,order));
         cl.WriteToUserFile();
         bestelling.clear();
         totalPrize = 0.00;
@@ -367,7 +375,7 @@ public class MainActivity extends AppCompatActivity {
 
             for(int i = 0 ; i < cl.transactions.size() ; i++){
 
-                outputFile.write(cl.transactions.get(i).getName() + "," + cl.transactions.get(i).getPrize().toString() + "," + cl.transactions.get(i).getTimestamp() +  "," + cl.transactions.get(i).getOrder() + "\n");
+                outputFile.write(cl.transactions.get(i).getName() + "," + cl.transactions.get(i).getEmail() + "," + cl.transactions.get(i).getPrize().toString() + "," + cl.transactions.get(i).getTimestamp() +  "," + cl.transactions.get(i).getOrder() + "\n");
             }
             outputFile.flush();
             outputFile.close();

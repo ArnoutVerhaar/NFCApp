@@ -1,6 +1,13 @@
 package com.example.myapplication;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.ContextWrapper;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -102,7 +109,7 @@ public class Cleaner {
                 while ((lineFromFile = reader.readLine())!= null){
                     StringTokenizer tokens = new StringTokenizer(lineFromFile, ",");
                     try {
-                        Transaction trans = new Transaction(tokens.nextToken(), Double.parseDouble(tokens.nextToken()), tokens.nextToken(), tokens.nextToken());
+                        Transaction trans = new Transaction(tokens.nextToken(), tokens.nextToken(), Double.parseDouble(tokens.nextToken()), tokens.nextToken(), tokens.nextToken());
                         transactions.add(trans);
                     }
                     catch (Exception e){
@@ -119,16 +126,16 @@ public class Cleaner {
     public void write_external_userfile(){
         readUserFile();
         File root = android.os.Environment.getExternalStorageDirectory();
+        Log.i("MEDIA", root.getAbsolutePath().toString());
         File dir = new File (root.getAbsolutePath() + "/Documents");
         dir.mkdirs();
         File file = new File(dir, "Users.csv");
         file.delete();
-
         try {
             FileOutputStream f = new FileOutputStream(file);
             PrintWriter pw = new PrintWriter(f);
             pw.println("Naam;Saldo;IBAN;Email;UniqueToken");
-            Toast.makeText(this.fileContext.getApplicationContext(), Integer.toString(users.size()), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this.fileContext.getApplicationContext(), Integer.toString(users.size()), Toast.LENGTH_SHORT).show();
             for(int i =0; i < users.size(); i++){
                 //if(users.get(i).getKosten() > 0){
                     pw.println(users.get(i).getName() + ";" + String.format(Locale.US, "%.2f",users.get(i).getKosten()) + ";" + users.get(i).getIBAN() + ";" + users.get(i).getEmail() + ";" + users.get(i).getUniqueToken());
@@ -137,13 +144,13 @@ public class Cleaner {
             pw.flush();
             pw.close();
             f.close();
-            Toast.makeText(this.fileContext.getApplicationContext(),"\n\nFile written to "+file, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this.fileContext.getApplicationContext(),"File written to "+file, Toast.LENGTH_SHORT).show();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             Log.i("MEDIA", "******* File not found. Did you" +
                     " add a WRITE_EXTERNAL_STORAGE permission to the   manifest?");
         } catch (IOException e) {
-            e.printStackTrace();
+            Toast.makeText(this.fileContext.getApplicationContext(),"Something went wrong" + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -161,7 +168,7 @@ public class Cleaner {
             PrintWriter pw = new PrintWriter(f);
             pw.println("Naam;Bedrag;Tijdstip;Bestelling");
             for(int i =0; i < transactions.size(); i++){
-                pw.println(transactions.get(i).getName() + ";" + String.format(Locale.US, "%.2f",transactions.get(i).getPrize()) + ";" + transactions.get(i).getTimestamp() + ";" + transactions.get(i).getOrder());
+                pw.println(transactions.get(i).getName() + ";" + transactions.get(i).getEmail() + ";" + String.format(Locale.US, "%.2f",transactions.get(i).getPrize()) + ";" + transactions.get(i).getTimestamp() + ";" + transactions.get(i).getOrder());
             }
             pw.flush();
             pw.close();
@@ -182,8 +189,8 @@ public class Cleaner {
         File dir = new File (root.getAbsolutePath() + "/Documents");
         File file = new File(dir, "Users.csv");
         users.clear();
-
         if(file.exists()){
+
             try{
                 FileInputStream is = new FileInputStream(file);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(is));
@@ -208,11 +215,30 @@ public class Cleaner {
                     }
                 }
                 WriteToUserFile();
-
             }catch(IOException e){
                 e.printStackTrace();
             }
         }
-        //Toast.makeText(getApplicationContext(),"\n\nFile written to "+file, Toast.LENGTH_SHORT).show();
+
+    }
+    public Activity getActivity(Context context)
+    {
+        if (context == null)
+        {
+            return null;
+        }
+        else if (context instanceof ContextWrapper)
+        {
+            if (context instanceof Activity)
+            {
+                return (Activity) context;
+            }
+            else
+            {
+                return getActivity(((ContextWrapper) context).getBaseContext());
+            }
+        }
+
+        return null;
     }
 }
