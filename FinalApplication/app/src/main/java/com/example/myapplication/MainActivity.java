@@ -10,7 +10,6 @@ import android.graphics.Color;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -46,12 +45,9 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.StringTokenizer;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends baseActivity {
 
     private static final String TAG = "MEDIA";
-    private DrawerLayout mDrawer;
-    private ActionBarDrawerToggle mToggle;
-    private Toolbar mToolbar;
     public Double totalPrize = 0.00;
 
     private NfcAdapter nfcAdapter;
@@ -60,86 +56,20 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<String> settingsArray;
     public String defEmail = "defaultemail@default.com";
     public String defChipPrijs = "2.00";
-    public ImageAdapter myAdapter;
     public GridView gridview;
-    float dpHeight,dpWidth;
     ArrayList<String> bestelling;
-    Cleaner cl = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.setBaseContentView(R.layout.activity_main);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        mToolbar = (Toolbar) findViewById(R.id.nav_action);
-        setSupportActionBar(mToolbar);
 
-        try{
-            ProviderInstaller.installIfNeeded(getApplicationContext());
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-
-        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mToggle = new ActionBarDrawerToggle(this, mDrawer,R.string.open,R.string.close);
-
-        mDrawer.addDrawerListener(mToggle);
-        mToggle.syncState();
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        NavigationView mNavigationView;
-        mNavigationView = (NavigationView) findViewById(R.id.nav_menu);
-        mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            public boolean onNavigationItemSelected(final MenuItem menuItem) {
-                mDrawer.closeDrawer((int) Gravity.LEFT);
-                int id = menuItem.getItemId();
-                switch (id) {
-                    case R.id.nav_payment:
-                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                        startActivity(intent);
-                        return true;
-                    case R.id.nav_contact:
-                        Intent account = new Intent(getApplicationContext(), ThirdActivity.class);
-                        account.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                        startActivity(account);
-                        return true;
-                    case R.id.nav_addprize:
-                        Intent intent4 = new Intent(getApplicationContext(), SecondActivity.class);
-                        intent4.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                        startActivity(intent4);
-                        return true;
-                    case R.id.nav_users:
-                        Intent intent2 = new Intent(getApplicationContext(), UsersActivity.class);
-                        intent2.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                        startActivity(intent2);
-                        return true;
-                    case R.id.nav_settings:
-                        Intent intent3 = new Intent(getApplicationContext(), SettingsActivity.class);
-                        startActivity(intent3);
-                        intent3.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                        return true;
-
-                    default:
-                        return true;
-                }
-
-            };
-
-
-        });
-
-        cl = new Cleaner(getApplicationContext());
-        //cl.read_external_userfile();
-        //cl.WriteToUserFile();
         drinks = new ArrayList<Drink>();
         readDrinkfile();
-
         gridview = (GridView) findViewById(R.id.btnGrid);
         gridview.setAdapter(new ImageAdapter(this));
 
         bestelling = new ArrayList<String>();
-
         cl.readUserFile();
         //cl.WriteToUserFile();
         //cl.readTransactionfile();
@@ -167,16 +97,8 @@ public class MainActivity extends AppCompatActivity {
                     Toast.LENGTH_LONG).show();
         }
 
-        Display display = getWindowManager().getDefaultDisplay();
-        DisplayMetrics outMetrics = new DisplayMetrics ();
-        display.getMetrics(outMetrics);
-
-        float density  = getResources().getDisplayMetrics().density;
-        dpHeight = outMetrics.heightPixels;
-        dpWidth  = outMetrics.widthPixels;
 
         //cl.write_external_userfile();
-
     }
 
     private void readSettingsfile() {
@@ -221,13 +143,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if(mToggle.onOptionsItemSelected(item)){
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+
 
     public void readDrinkfile(){
         drinks.clear();
@@ -481,8 +397,16 @@ public class MainActivity extends AppCompatActivity {
                 // if it's not recycled, initialize some attributes
                 myBtn = new Button(mContext);
 
-                myBtn.setLayoutParams(new GridView.LayoutParams((int)(dpWidth / 3 - 5)
-                        , (int)dpHeight / 6));
+                Display display = getWindowManager().getDefaultDisplay();
+                DisplayMetrics outMetrics = new DisplayMetrics ();
+                display.getMetrics(outMetrics);
+
+                float density  = getResources().getDisplayMetrics().density;
+                float dpHeight = outMetrics.heightPixels / density;
+                float dpWidth  = outMetrics.widthPixels / density;
+
+                myBtn.setLayoutParams(new GridView.LayoutParams((int)(dpWidth / 1.5)
+                        , (int)dpHeight / 3));
                 myBtn.setPadding(4, 4, 4, 4);
 
 

@@ -21,85 +21,21 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.util.ArrayList;
 import java.util.Locale;
-import java.util.StringTokenizer;
 
 /**
- * Created by arnou on 12-9-2017.
+ * Created by arnout on 12-9-2017.
  */
 
-public class UsersActivity extends AppCompatActivity {
-    private DrawerLayout mDrawer;
-    private ActionBarDrawerToggle mToggle;
-    public android.support.v7.widget.Toolbar mToolbar;
+public class UsersActivity extends baseActivity {
     UserAdapter customAdapter = new UserAdapter();
-    Cleaner cl = null;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+
+        setBaseContentView(R.layout.users_layout);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.users_layout);
-
-        mToolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.nav_action);
-        setSupportActionBar(mToolbar);
-
-        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mToggle = new ActionBarDrawerToggle(this, mDrawer,R.string.open,R.string.close);
-
-        mDrawer.addDrawerListener(mToggle);
-        mToggle.syncState();
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        NavigationView mNavigationView;
-        mNavigationView = (NavigationView) findViewById(R.id.nav_menu);
-        mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            public boolean onNavigationItemSelected(final MenuItem menuItem) {
-                mDrawer.closeDrawer((int) Gravity.LEFT);
-                int id = menuItem.getItemId();
-                switch (id) {
-                    case R.id.nav_payment:
-                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                        startActivity(intent);
-                        return true;
-                    case R.id.nav_contact:
-                        Intent account = new Intent(getApplicationContext(), ThirdActivity.class);
-                        account.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                        startActivity(account);
-                        return true;
-                    case R.id.nav_addprize:
-                        Intent intent4 = new Intent(getApplicationContext(), SecondActivity.class);
-                        intent4.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                        startActivity(intent4);
-                        return true;
-                    case R.id.nav_users:
-                        Intent intent2 = new Intent(getApplicationContext(), UsersActivity.class);
-                        intent2.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                        startActivity(intent2);
-                        return true;
-                    case R.id.nav_settings:
-                        Intent intent3 = new Intent(getApplicationContext(), SettingsActivity.class);
-                        startActivity(intent3);
-                        intent3.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                        return true;
-
-                    default:
-                        return true;
-                }
-            };
-        });
 
         final ListView listview = (ListView)findViewById(R.id.translist) ;
-        cl = new Cleaner(getApplicationContext());
-
         cl.readUserFile();
 
         listview.setAdapter(customAdapter);
@@ -107,13 +43,6 @@ public class UsersActivity extends AppCompatActivity {
         listview.setItemsCanFocus(true);
 
 
-    }
-
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if(mToggle.onOptionsItemSelected(item)){
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     public void ClearData(View v){

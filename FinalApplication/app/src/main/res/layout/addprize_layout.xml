@@ -20,7 +20,7 @@
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Instellingen:"
+            android:text="Toegevoegde prijzen:"
             android:textAlignment="center"
             android:gravity="center"
             android:textSize="24sp" />
@@ -29,40 +29,31 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <ListView
-                android:id="@+id/translist"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true" />
+                <ListView
+                    android:id="@+id/myList"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:divider="@android:color/black"
+                    android:dividerHeight="2dp"
+                    android:visibility="visible"
+                    android:layout_marginLeft="3dp"
+                    android:layout_marginRight="3dp"
+                    android:layout_marginTop="3dp" />
 
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Gemaakt door: Arnout Verhaar"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true" />
-
-            <com.melnykov.fab.FloatingActionButton
-                android:id="@+id/setDefaults"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_gravity="bottom|right"
-                android:layout_margin="16dp"
-                android:onClick="setDefaults"
-                android:src="@android:drawable/ic_menu_set_as"
-
-                app:backgroundTint="@android:color/black" />
+                <com.melnykov.fab.FloatingActionButton
+                    android:id="@+id/fab"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|right"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_margin="16dp"
+                    android:src="@android:drawable/ic_input_add"
+                    android:onClick="addPrize"/>
 
         </RelativeLayout>
-
     </LinearLayout>
-
 
     <android.support.design.widget.NavigationView
         android:layout_width="wrap_content"

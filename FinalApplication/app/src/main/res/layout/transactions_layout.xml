@@ -20,7 +20,7 @@
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Instellingen:"
+            android:text="Laatste Transacties"
             android:textAlignment="center"
             android:gravity="center"
             android:textSize="24sp" />
@@ -28,6 +28,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
 
             <ListView
                 android:id="@+id/translist"
@@ -37,27 +38,19 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true" />
 
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Gemaakt door: Arnout Verhaar"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true" />
-
             <com.melnykov.fab.FloatingActionButton
-                android:id="@+id/setDefaults"
+                android:id="@+id/sendmail"
+                android:onClick="sendMail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
                 android:layout_gravity="bottom|right"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
                 android:layout_margin="16dp"
-                android:onClick="setDefaults"
-                android:src="@android:drawable/ic_menu_set_as"
-
-                app:backgroundTint="@android:color/black" />
+                android:src="@android:drawable/sym_action_email"
+                app:backgroundTint="@android:color/black"
+                />
 
         </RelativeLayout>
 
