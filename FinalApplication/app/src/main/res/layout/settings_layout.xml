@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawer_layout">
+
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <include
+            layout="@layout/navigation_action"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Instellingen:"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:textSize="24sp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ListView
+                android:id="@+id/translist"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true" />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Gemaakt door: Arnout Verhaar"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true" />
+
+            <com.melnykov.fab.FloatingActionButton
+                android:id="@+id/setDefaults"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_gravity="bottom|right"
+                android:layout_margin="16dp"
+                android:onClick="setDefaults"
+                android:src="@android:drawable/ic_menu_set_as"
+
+                app:backgroundTint="@android:color/black" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+
+    <android.support.design.widget.NavigationView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        app:menu="@menu/navigation_menu"
+        android:layout_gravity="start"
+        app:headerLayout="@layout/navigation_header"
+        android:id="@+id/nav_menu">
+    </android.support.design.widget.NavigationView>
+</android.support.v4.widget.DrawerLayout>
