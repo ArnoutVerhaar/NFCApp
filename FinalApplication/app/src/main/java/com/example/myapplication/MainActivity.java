@@ -75,7 +75,7 @@ public class MainActivity extends baseActivity {
         //cl.readTransactionfile();
 
         settingsArray = new ArrayList<>();
-        readSettingsfile();
+        //readSettingsfile();
 
         // NFC Tag handling
 
@@ -102,7 +102,7 @@ public class MainActivity extends baseActivity {
     }
 
     private void readSettingsfile() {
-         deleteFile("settings.txt");
+        deleteFile("settings.txt");
         File file = getApplicationContext().getFileStreamPath("settings.txt");
         String lineFromFile;
         if(file.exists()){
@@ -322,7 +322,7 @@ public class MainActivity extends baseActivity {
         gridview.setAdapter(new ImageAdapter(this));
         //fillButtons();
         //readTransactionfile();
-        readSettingsfile();
+        cl.readSettings();
     }
 
     @Override
@@ -415,7 +415,7 @@ public class MainActivity extends baseActivity {
                 myBtn.setTag(String.format(Locale.US, "%.2f",drinks.get(position).getPrize()));
                 myBtn.setBackgroundResource(R.drawable.bestelbutton);
                 myBtn.setTextColor(Color.WHITE);
-                myBtn.setTextSize(12);
+                myBtn.setTextSize(14);
                 myBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

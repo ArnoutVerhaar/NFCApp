@@ -1,6 +1,8 @@
 package com.example.myapplication;
 
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -23,6 +25,7 @@ public class baseActivity extends AppCompatActivity {
     private ActionBarDrawerToggle mToggle;
     private Toolbar mToolbar;
     public Double totalPrize = 0.00;
+    private CommissiePopup commissiePopup;
 
     private NfcAdapter nfcAdapter;
     ArrayList<Drink> drinks;
@@ -35,7 +38,8 @@ public class baseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        cl = new Cleaner(getApplicationContext(), this);
+        commissiePopup = new CommissiePopup(getApplicationContext(), cl, this);
         mToolbar = (Toolbar) findViewById(R.id.nav_action);
         setSupportActionBar(mToolbar);
 
@@ -96,7 +100,7 @@ public class baseActivity extends AppCompatActivity {
 
         });
 
-        cl = new Cleaner(getApplicationContext());
+
         //cl.read_external_userfile();
         //cl.WriteToUserFile();
         bestelling = new ArrayList<String>();
@@ -117,5 +121,12 @@ public class baseActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        cl.readSettings();
     }
 }

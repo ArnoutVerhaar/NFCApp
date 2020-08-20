@@ -6,9 +6,14 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -21,8 +26,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.StringTokenizer;
+
+import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by arnou on 20-2-2018.
@@ -31,10 +39,18 @@ import java.util.StringTokenizer;
 public class Cleaner {
 
     Context fileContext;
+    AppCompatActivity appView;
     ArrayList<Gebruiker> users = new ArrayList<>();
     ArrayList<Transaction> transactions = new ArrayList<>();
-    public Cleaner(Context fileContext){
+    ArrayList<String> commissies = new ArrayList<>();
+    String selectedCommissie;
+
+    ArrayList<String> settings = new ArrayList<>();
+
+    public Cleaner(Context fileContext, AppCompatActivity v){
         this.fileContext = fileContext;
+        this.appView = v;
+        readSettings();
     }
 
     public void deleteTransactions(){
@@ -52,7 +68,7 @@ public class Cleaner {
 
     public void WriteToUserFile(){
         try{
-            FileOutputStream file = fileContext.getApplicationContext().openFileOutput("users.txt", Context.MODE_PRIVATE);
+            FileOutputStream file = fileContext.getApplicationContext().openFileOutput("users.txt", MODE_PRIVATE);
             OutputStreamWriter outputFile = new OutputStreamWriter(file);
             for(int i = 0; i < users.size() ; i++){
                 outputFile.write(users.get(i).getName() + "," + users.get(i).getEmail()+ "," + users.get(i).getIBAN() + ","+ users.get(i).getKosten().toString() + "," + users.get(i).getUniqueToken() + "\n");
@@ -63,6 +79,116 @@ public class Cleaner {
 
         }catch(IOException e){
             e.printStackTrace();
+        }
+    }
+    public void WriteToCommissies(ArrayList<String> commissies){
+        try{
+            File tester = fileContext.getApplicationContext().getFileStreamPath("commissies.txt");
+            if(tester.exists()) {
+                Log.w("Exists", "file does already exist");
+                return;
+            }
+            Log.w("Exists", "file does not exist");
+            FileOutputStream file = fileContext.getApplicationContext().openFileOutput("commissies.txt", MODE_PRIVATE);
+            OutputStreamWriter outputFile = new OutputStreamWriter(file);
+            for(int i = 0; i < commissies.size() ; i++){
+                outputFile.write(commissies.get(i) + "\n");
+            }
+            outputFile.flush();
+            outputFile.close();
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void readCommissies(){
+        commissies.clear();
+        File file = fileContext.getApplicationContext().getFileStreamPath("commissies.txt");
+        String lineFromFile;
+        if(file.exists()){
+            try{
+                BufferedReader reader = new BufferedReader(new InputStreamReader(fileContext.getApplicationContext().openFileInput("commissies.txt")));
+                int counter = 0;
+                while ((lineFromFile = reader.readLine())!= null){
+                    commissies.add(lineFromFile);
+                }
+            }catch(IOException e){
+                e.printStackTrace();
+            }
+        }
+        Log.w("commissies", commissies.toString());
+    }
+    public void setCommissie(@Nullable String c){
+        final Button cButton = (Button)appView.findViewById(R.id.commissiesButton);
+        if(c == null){
+            cButton.setText(selectedCommissie);
+        }else{
+            Log.w("selectedCommissie", c);
+            selectedCommissie = c;
+            cButton.setText(c);
+            if(settings.size() == 2){
+                WriteToSettings();
+                readSettings();
+            }
+            settings.set(2, c);
+            WriteToSettings();
+        }
+    }
+
+    public void readSettings() {
+        settings.clear();
+        //deleteFile("settings.txt");
+        File file = fileContext.getFileStreamPath("settings.txt");
+        String lineFromFile;
+        if(file.exists()){
+            try{
+                BufferedReader reader = new BufferedReader(new InputStreamReader(fileContext.openFileInput("settings.txt")));
+                int counter = 0;
+                while ((lineFromFile = reader.readLine())!= null){
+                    settings.add(lineFromFile.split(":")[1]);
+                }
+                Log.w("settings", settings.toString());
+            }catch(IOException e){
+                Toast.makeText(fileContext, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }else{
+            WriteToSettings();
+            readSettings();
+        }
+
+        if(settings.size() >= 3 && settings.get(2) != null)
+        {
+            selectedCommissie = settings.get(2);
+            setCommissie(null);
+        }
+        Log.w("settings", settings.toString());
+    }
+
+    public void WriteToSettings(){
+        if(settings.size() != 3){
+            settings = new ArrayList<>(Arrays.asList("defaultemail@default.com","2.00", "HikCie"));
+        }
+        try{
+            FileOutputStream myfile = fileContext.openFileOutput("settings.txt", MODE_PRIVATE);
+            OutputStreamWriter outputFile = new OutputStreamWriter(myfile);
+            for(int i = 0; i < settings.size() ; i++){
+                if(i == 0)
+                {
+                    outputFile.write("E:" + settings.get(0) + "\n");
+                }
+                else if(i==1){
+                    outputFile.write("C:" + settings.get(1) + "\n");
+                }
+                else if(i==2){
+                    outputFile.write("SC:" + settings.get(2));
+                }
+            }
+            outputFile.flush();
+            outputFile.close();
+            Log.w("fileWritten", "settings fileWritten");
+
+        }catch(IOException e){
+            Toast.makeText(fileContext, e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 

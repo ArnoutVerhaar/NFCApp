@@ -109,7 +109,7 @@ public class AddPrizeActivity extends baseActivity {
                     Drink myDrink = new Drink((name.getText().toString()).replace("'", ""), Double.parseDouble(prijs.getText().toString()));
                     drinks.add(myDrink);
                     customAdapter.notifyDataSetChanged();
-                    WriteToFile();// Do something with value!
+                    WriteToFile();
                 }
 
             }
