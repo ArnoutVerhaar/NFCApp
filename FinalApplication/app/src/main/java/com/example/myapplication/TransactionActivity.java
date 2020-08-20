@@ -1,7 +1,9 @@
 package com.example.myapplication;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,11 +14,15 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,8 +50,8 @@ import java.util.Locale;
 public class TransactionActivity extends baseActivity {
 
     TransactionAdapter customAdapter = new TransactionAdapter();
-    ArrayList<String> settingsArray;
-
+    ArrayList<Integer> selectedTransactions;
+    public PopupWindow popupWindow;
 
     public interface AsyncResponse {
         void processFinish(Object output);
@@ -56,7 +62,7 @@ public class TransactionActivity extends baseActivity {
 
         super.setBaseContentView(R.layout.transactions_layout);
         super.onCreate(savedInstanceState);
-
+        selectedTransactions = new ArrayList<>();
         cl.readTransactionfile();
         cl.readUserFile();
 
@@ -65,63 +71,15 @@ public class TransactionActivity extends baseActivity {
         listview.setAdapter(customAdapter);
         customAdapter.notifyDataSetChanged();
         listview.setItemsCanFocus(true);
-
-        settingsArray = new ArrayList<>();
-        readSettingsfile();
-
-    }
-
-    private void readSettingsfile() {
-        //deleteFile("settings.txt");
-        File file = getApplicationContext().getFileStreamPath("settings.txt");
-        String lineFromFile;
-        if(file.exists()){
-            settingsArray.clear();
-            try{
-                BufferedReader reader = new BufferedReader(new InputStreamReader(openFileInput("settings.txt")));
-                int counter = 0;
-                while ((lineFromFile = reader.readLine())!= null){
-                    settingsArray.add(lineFromFile.split(":")[1]);
-                }
-
-            }catch(IOException e){
-                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        }
     }
 
     public void sendMail(View v){
-
         cl.readTransactionfile();
         cl.readUserFile();
-
         //cl.write_external_transactionfile();
         //cl.write_external_userfile();
         findViewById(R.id.sendmail).setEnabled(false);
         JSONObject json = createJSONobject(cl.users,cl.transactions);
-            /*File root = android.os.Environment.getExternalStorageDirectory();
-            // See http://stackoverflow.com/questions/3551821/android-write-to-sd-card-folder
-
-            File dir = new File (root.getAbsolutePath() + "/Documents");
-            dir.mkdirs();
-            File file = new File(dir, "json.txt");
-            file.delete();
-
-            try {
-                FileOutputStream f = new FileOutputStream(file);
-                PrintWriter pw = new PrintWriter(f);
-                pw.println("Naam;Bedrag;Tijdstip;Bestelling");
-                pw.print(json.toString());
-                pw.flush();
-                pw.close();
-                f.close();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                Log.i("MEDIA", "******* File not found. Did you" +
-                        " add a WRITE_EXTERNAL_STORAGE permission to the   manifest?");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }*/
         Log.d("Response:", String.valueOf(cl.transactions.size()));
         AsyncT asyncT = new AsyncT(json, new AsyncResponse() {
             @Override
@@ -141,40 +99,49 @@ public class TransactionActivity extends baseActivity {
             }
         });
         asyncT.execute();
-
-        //Intent emailIntent;
-        /*String externalStoragePathStr = Environment.getExternalStorageDirectory().toString() + File.separatorChar;
-        Intent emailIntent = new Intent(android.content.Intent.ACTION_SEND_MULTIPLE);
-        emailIntent.setData(Uri.parse("mailto:"));
-        emailIntent.setType("text/plain");
-        //Uri uri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "Documents/Users.csv"));
-        //emailIntent.putExtra(Intent.EXTRA_STREAM, uri);
-
-        String filePaths[] = {
-                externalStoragePathStr + "Documents/Users.csv",
-                externalStoragePathStr + "Documents/Transactions.csv"};
-        ArrayList<Uri> uris = new ArrayList<Uri>();
-        for (String file : filePaths) {
-            File fileIn = new File(file);
-            Uri u = Uri.fromFile(fileIn);
-            uris.add(u);
-        }
-
-        SimpleDateFormat s = new SimpleDateFormat("dd-MM-yyyy");
-        String format = s.format(new Date());
-
-        emailIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
-
-        emailIntent.putExtra(Intent.EXTRA_EMAIL  , new String[]{settingsArray.get(0).toString()});
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Transactions at " + format);
-        try {
-            startActivity(Intent.createChooser(emailIntent, "Send mail..."));
-            finish();
-            Log.i("Finished sending email.", "");
-        } catch (android.content.ActivityNotFoundException ex) {
-            Toast.makeText(TransactionActivity.this, "There is no email client installed.", Toast.LENGTH_SHORT).show();
-        }*/
     }
+    public void notifyFloatingButton(){
+        if(selectedTransactions.size() > 0){
+            findViewById(R.id.setCommissieButton).setVisibility(View.VISIBLE);
+        }else{
+            findViewById(R.id.setCommissieButton).setVisibility(View.GONE);
+        }
+    }
+    public void openCommissiesPopup(View v){
+        Context mContext = getApplicationContext();
+        commissieAdapter cAdapter = new commissieAdapter(mContext);;
+        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(mContext.LAYOUT_INFLATER_SERVICE);
+        View popupView = inflater.inflate(R.layout.popup_window, null);
+        final ListView listview = (ListView)popupView.findViewById(R.id.commissieLijst);
+        listview.setAdapter(cAdapter);
+        cAdapter.notifyDataSetChanged();
+        listview.setItemsCanFocus(true);
+
+        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        boolean focusable = true; // lets taps outside the popup also dismiss it
+        popupWindow = new PopupWindow(popupView, width, height, focusable);
+        popupWindow.showAtLocation(v, Gravity.CENTER, 0, 0);
+        // dismiss the popup window when touched
+        popupView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                popupWindow.dismiss();
+                return true;
+            }
+        });
+    }
+    public void changeCommissieForSelected(String c) {
+        for (Integer i : selectedTransactions) {
+            cl.transactions.get(i).setCommissie(c);
+        }
+        cl.WriteTransactionFile();
+        selectedTransactions.clear();
+        notifyFloatingButton();
+        customAdapter.notifyDataSetChanged();
+
+    }
+
     public JSONObject createJSONobject(ArrayList<Gebruiker> clUsers, ArrayList<Transaction> clTransactions){
         JSONObject myJson = new JSONObject();
         JSONArray userArray = new JSONArray();
@@ -202,6 +169,7 @@ public class TransactionActivity extends baseActivity {
                 myTrans.put("price", trans.getPrize());
                 myTrans.put("timestamp", trans.getTimestamp());
                 myTrans.put("email", trans.getEmail());
+                myTrans.put("commissie", trans.getCommissie());
                 transactionArray.put(myTrans);
             }catch (JSONException e){
                 e.printStackTrace();
@@ -249,24 +217,61 @@ public class TransactionActivity extends baseActivity {
             TextView tprize = (TextView)view.findViewById(R.id.prizeView);
             TextView tstamp = (TextView) view.findViewById(R.id.timestamp);
 
+            String color = "#fc5668";
+            switch (cl.transactions.get(i).getCommissie()){
+                case "HikCie":
+                    color = "#fc5668";
+                    break;
+                case "DiesCie":
+                    color = "#d3298c";
+                    break;
+                case "AmCie":
+                    color = "#5d74f1";
+                    break;
+            }
+            if(selectedTransactions.contains(i)){
+                view.setBackgroundColor(Color.parseColor("#add8e6"));
+            }else{
+                view.setBackgroundColor(Color.parseColor(color));
+            }
+
             tname.setText(cl.transactions.get(i).getName());
             tprize.setText("€" + String.format("%.2f",cl.transactions.get(i).getPrize()) + ",-");
             tstamp.setText(cl.transactions.get(i).getTimestamp());
-
+            view.setOnLongClickListener(new View.OnLongClickListener(){
+                @Override
+                public boolean onLongClick(View v) {
+                    selectedTransactions.add(i);
+                    notifyFloatingButton();
+                    customAdapter.notifyDataSetChanged();
+                    return true;
+                };
+            });
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(TransactionActivity.this);
-                    builder.setMessage("Prijs: €" + String.format(Locale.US, "%.2f",cl.transactions.get(i).getPrize()) + ",-\nBestelling: " + cl.transactions.get(i).getOrder() +"\nTimestamp: " +cl.transactions.get(i).getTimestamp())
-                            .setTitle(cl.transactions.get(i).getName());
-                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            // User cancelled the dialog
-                        }
-                    });
-                    // 3. Get the AlertDialog from create()
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
+                    if(selectedTransactions.contains(i)){
+                        selectedTransactions.remove(selectedTransactions.indexOf(i));
+                        notifyFloatingButton();
+                        customAdapter.notifyDataSetChanged();
+                    }else if(selectedTransactions.size() > 0){
+                        selectedTransactions.add(i);
+                        notifyFloatingButton();
+                        customAdapter.notifyDataSetChanged();
+                    }
+                    else{
+                        AlertDialog.Builder builder = new AlertDialog.Builder(TransactionActivity.this);
+                        builder.setMessage("Prijs: €" + String.format(Locale.US, "%.2f", cl.transactions.get(i).getPrize()) + ",-\nBestelling: " + cl.transactions.get(i).getOrder() + "\nTimestamp: " + cl.transactions.get(i).getTimestamp() + "\nCommissie: " + cl.transactions.get(i).getCommissie())
+                                .setTitle(cl.transactions.get(i).getName());
+                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // User cancelled the dialog
+                            }
+                        });
+                        // 3. Get the AlertDialog from create()
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
                 }
 
             });
@@ -327,6 +332,51 @@ public class TransactionActivity extends baseActivity {
         @Override
         protected void onPostExecute(Object result) {
             delegate.processFinish(result);
+        }
+    }
+
+    public class commissieAdapter extends BaseAdapter {
+        private Context mContext;
+
+        public commissieAdapter(Context c) {
+            mContext = c;
+        }
+
+        public int getCount() {
+            return cl.commissies.size();
+        }
+
+        public Object getItem(int position) {
+            return null;
+        }
+
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        // create a new ImageView for each item referenced by the Adapter
+        public View getView(int position, View convertView, ViewGroup parent) {
+            final TextView text;
+            if (convertView == null) {
+                // if it's not recycled, initialize some attributes
+                text = new TextView(mContext);
+                text.setText(cl.commissies.get(position));
+                text.setGravity(Gravity.CENTER_HORIZONTAL);
+                text.setTextColor(Color.WHITE);
+                text.setPadding(10,30,10,30);
+                text.setTextSize(20);
+                text.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // TODO Auto-generated method stub
+                        changeCommissieForSelected(text.getText().toString());
+                        popupWindow.dismiss();
+                    }
+                });
+            } else {
+                text = (TextView) convertView;
+            }
+            return text;
         }
     }
 

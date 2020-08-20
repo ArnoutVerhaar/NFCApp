@@ -105,16 +105,18 @@ public class Cleaner {
         commissies.clear();
         File file = fileContext.getApplicationContext().getFileStreamPath("commissies.txt");
         String lineFromFile;
-        if(file.exists()){
-            try{
+        if(file.exists()) {
+            try {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(fileContext.getApplicationContext().openFileInput("commissies.txt")));
                 int counter = 0;
-                while ((lineFromFile = reader.readLine())!= null){
+                while ((lineFromFile = reader.readLine()) != null) {
                     commissies.add(lineFromFile);
                 }
-            }catch(IOException e){
+            } catch (IOException e) {
                 e.printStackTrace();
             }
+        }else{
+            commissies = new ArrayList<>(Arrays.asList("HikCie", "DiesCie", "AmCie"));
         }
         Log.w("commissies", commissies.toString());
     }
@@ -235,7 +237,7 @@ public class Cleaner {
                 while ((lineFromFile = reader.readLine())!= null){
                     StringTokenizer tokens = new StringTokenizer(lineFromFile, ",");
                     try {
-                        Transaction trans = new Transaction(tokens.nextToken(), tokens.nextToken(), Double.parseDouble(tokens.nextToken()), tokens.nextToken(), tokens.nextToken());
+                        Transaction trans = new Transaction(tokens.nextToken(), tokens.nextToken(), Double.parseDouble(tokens.nextToken()), tokens.nextToken(), tokens.nextToken(), tokens.nextToken());
                         transactions.add(trans);
                     }
                     catch (Exception e){
@@ -247,6 +249,20 @@ public class Cleaner {
             }
         }
 
+    }
+
+    public void WriteTransactionFile(){
+        try{
+            FileOutputStream file = fileContext.openFileOutput("transactions.txt", MODE_PRIVATE);
+            OutputStreamWriter outputFile = new OutputStreamWriter(file);
+            for(int i = 0 ; i < transactions.size() ; i++){
+                outputFile.write(transactions.get(i).getName() + "," + transactions.get(i).getEmail() + "," + transactions.get(i).getPrize().toString() + "," + transactions.get(i).getTimestamp() +  "," + transactions.get(i).getOrder() + "," + transactions.get(i).getCommissie() + "\n");
+            }
+            outputFile.flush();
+            outputFile.close();
+        }catch(IOException e){
+            Toast.makeText(fileContext, e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void write_external_userfile(){

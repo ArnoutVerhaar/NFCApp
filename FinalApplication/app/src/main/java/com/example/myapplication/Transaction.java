@@ -11,13 +11,15 @@ public class Transaction {
     String timestamp;
     String order;
     String email;
+    String commissie;
 
-    public Transaction(String n, String e, Double p, String t, String o){
+    public Transaction(String n, String e, Double p, String t, String o, String c){
         this.name=n;
         this.prize=p;
         this.timestamp=t;
         this.order=o;
         this.email=e;
+        this.commissie = c;
     }
 
     public void setName(String name){
@@ -33,6 +35,7 @@ public class Transaction {
         this.timestamp = timestamp;
     }
     public void setEmail(String email){ this.email = email;}
+    public void setCommissie(String commissie){ this.commissie = commissie;}
 
     public String getName(){
         return name;
@@ -48,5 +51,8 @@ public class Transaction {
     }
     public String getEmail() {
         return email;
+    }
+    public String getCommissie() {
+        return commissie;
     }
 }

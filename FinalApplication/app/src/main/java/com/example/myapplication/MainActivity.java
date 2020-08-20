@@ -47,15 +47,10 @@ import java.util.StringTokenizer;
 
 public class MainActivity extends baseActivity {
 
-    private static final String TAG = "MEDIA";
     public Double totalPrize = 0.00;
-
     private NfcAdapter nfcAdapter;
     public Boolean pay = false;
     ArrayList<Drink> drinks;
-    ArrayList<String> settingsArray;
-    public String defEmail = "defaultemail@default.com";
-    public String defChipPrijs = "2.00";
     public GridView gridview;
     ArrayList<String> bestelling;
 
@@ -73,10 +68,6 @@ public class MainActivity extends baseActivity {
         cl.readUserFile();
         //cl.WriteToUserFile();
         //cl.readTransactionfile();
-
-        settingsArray = new ArrayList<>();
-        //readSettingsfile();
-
         // NFC Tag handling
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -100,50 +91,6 @@ public class MainActivity extends baseActivity {
 
         //cl.write_external_userfile();
     }
-
-    private void readSettingsfile() {
-        deleteFile("settings.txt");
-        File file = getApplicationContext().getFileStreamPath("settings.txt");
-        String lineFromFile;
-        if(file.exists()){
-            settingsArray.clear();
-            try{
-                BufferedReader reader = new BufferedReader(new InputStreamReader(openFileInput("settings.txt")));
-                int counter = 0;
-                while ((lineFromFile = reader.readLine())!= null){
-                    settingsArray.add(lineFromFile.split(":")[1]);
-                }
-
-            }catch(IOException e){
-                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        }
-        else{
-            try{
-                FileOutputStream myfile = openFileOutput("settings.txt", MODE_PRIVATE);
-                OutputStreamWriter outputFile = new OutputStreamWriter(myfile);
-                for(int i = 0; i < 2 ; i++){
-                    if(i == 0)
-                    {
-                        settingsArray.add(defEmail);
-                        outputFile.write("E:" + defEmail + "\n");
-                    }
-                    else if(i==1){
-                        settingsArray.add(defChipPrijs);
-                        outputFile.write("C: "+defChipPrijs);
-                    }
-                }
-                outputFile.flush();
-                outputFile.close();
-
-
-            }catch(IOException e){
-                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-
 
     public void readDrinkfile(){
         drinks.clear();
@@ -210,7 +157,7 @@ public class MainActivity extends baseActivity {
         IBAN.setInputType(InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
         IBAN.setHint("  IBAN");
         final CheckBox buyChip = new CheckBox(this);
-        buyChip.setText("Koop de chip voor \u20ac"+ settingsArray.get(1) + ",-");
+        buyChip.setText("Koop de chip voor \u20ac"+ cl.settings.get(1) + ",-");
         buyChip.setTextSize(18);
 
 
@@ -231,7 +178,7 @@ public class MainActivity extends baseActivity {
                 Double startBudget;
                 if(!name.getText().toString().matches("") || !email.getText().toString().matches("") || !IBAN.getText().toString().matches("")) {
                     if((buyChip.isChecked())){
-                        startBudget = Double.parseDouble(settingsArray.get(1));
+                        startBudget = Double.parseDouble(cl.settings.get(1));
                     }
                     else{
                         startBudget = 0.00;
@@ -277,7 +224,7 @@ public class MainActivity extends baseActivity {
             order =  order.substring(0,order.length()-3);
         Toast.makeText(getApplicationContext(), order, Toast.LENGTH_SHORT).show();
         user.setKosten(user.getKosten() + totalPrize);
-        cl.transactions.add(0,new Transaction(user.getName(), user.getEmail(), prize,format,order));
+        cl.transactions.add(0,new Transaction(user.getName(), user.getEmail(), prize,format,order, cl.selectedCommissie));
         cl.WriteToUserFile();
         bestelling.clear();
         totalPrize = 0.00;
@@ -291,7 +238,7 @@ public class MainActivity extends baseActivity {
 
             for(int i = 0 ; i < cl.transactions.size() ; i++){
 
-                outputFile.write(cl.transactions.get(i).getName() + "," + cl.transactions.get(i).getEmail() + "," + cl.transactions.get(i).getPrize().toString() + "," + cl.transactions.get(i).getTimestamp() +  "," + cl.transactions.get(i).getOrder() + "\n");
+                outputFile.write(cl.transactions.get(i).getName() + "," + cl.transactions.get(i).getEmail() + "," + cl.transactions.get(i).getPrize().toString() + "," + cl.transactions.get(i).getTimestamp() +  "," + cl.transactions.get(i).getOrder() + "," + cl.transactions.get(i).getCommissie() + "\n");
             }
             outputFile.flush();
             outputFile.close();
