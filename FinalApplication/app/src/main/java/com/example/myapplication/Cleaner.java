@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.annotation.Nullable;
@@ -21,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -44,6 +46,7 @@ public class Cleaner {
     ArrayList<Transaction> transactions = new ArrayList<>();
     ArrayList<String> commissies = new ArrayList<>();
     String selectedCommissie;
+    public Integer MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE = 1;
 
     ArrayList<String> settings = new ArrayList<>();
 
@@ -81,14 +84,9 @@ public class Cleaner {
             e.printStackTrace();
         }
     }
-    public void WriteToCommissies(ArrayList<String> commissies){
+    public void WriteToCommissies(){
         try{
             File tester = fileContext.getApplicationContext().getFileStreamPath("commissies.txt");
-            if(tester.exists()) {
-                Log.w("Exists", "file does already exist");
-                return;
-            }
-            Log.w("Exists", "file does not exist");
             FileOutputStream file = fileContext.getApplicationContext().openFileOutput("commissies.txt", MODE_PRIVATE);
             OutputStreamWriter outputFile = new OutputStreamWriter(file);
             for(int i = 0; i < commissies.size() ; i++){
@@ -117,6 +115,7 @@ public class Cleaner {
             }
         }else{
             commissies = new ArrayList<>(Arrays.asList("HikCie", "DiesCie", "AmCie"));
+            WriteToCommissies();
         }
         Log.w("commissies", commissies.toString());
     }
@@ -326,20 +325,29 @@ public class Cleaner {
     }
 
 
-    public void read_external_userfile(){
-        File root = android.os.Environment.getExternalStorageDirectory();
-        File dir = new File (root.getAbsolutePath() + "/Documents");
-        File file = new File(dir, "Users.csv");
+    public void openFileDialog(){
+        Intent fileIntent = new Intent(Intent.ACTION_GET_CONTENT);
+        fileIntent.setType("*/*");
+        appView.startActivityForResult(fileIntent, 10);
+    }
+
+    public void read_external_userfile(String path){
+
+        if (ContextCompat.checkSelfPermission(appView, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(appView, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, MY_PERMISSIONS_WRITE_EXTERNAL_STORAGE);
+        }
+
+        Log.i("padje", path);
+        /*File root = android.os.Environment.getExternalStorageDirectory();
+        File dir = new File (root.getAbsolutePath() + "/Documents");*/
+        File file = new File(path);
         users.clear();
         if(file.exists()){
-
             try{
-                FileInputStream is = new FileInputStream(file);
-                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                BufferedReader reader = new BufferedReader(new FileReader(file));
                 String lineFromFile;
                 reader.readLine();
                 while ((lineFromFile = reader.readLine())!= null){
-                    Log.i("MEDIA", lineFromFile);
                     StringTokenizer tokens = new StringTokenizer(lineFromFile, ";");
                     Gebruiker geb;
                     try {
@@ -359,9 +367,9 @@ public class Cleaner {
                 WriteToUserFile();
             }catch(IOException e){
                 e.printStackTrace();
+                e.printStackTrace();
             }
         }
-
     }
     public Activity getActivity(Context context)
     {

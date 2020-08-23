@@ -21,7 +21,7 @@
             android:layout_marginBottom="5dp"
             android:layout_marginTop="10dp"
             android:gravity="center_horizontal"
-            android:textColor="#ffffff"
+            android:textColor="#000000"
             android:text="Kies commissie:"
             android:textSize="22sp" />
 
@@ -31,7 +31,7 @@
             android:layout_width="match_parent"
             android:layout_below="@id/heading"
             android:padding="10dp"
-            android:divider="#ffffff"
+            android:divider="#000000"
             android:dividerHeight="1dip"
             android:layout_height="wrap_content" />
 

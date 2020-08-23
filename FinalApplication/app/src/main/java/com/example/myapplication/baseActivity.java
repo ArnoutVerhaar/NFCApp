@@ -1,11 +1,15 @@
 package com.example.myapplication;
 
+import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -35,6 +39,7 @@ public class baseActivity extends AppCompatActivity {
     ArrayList<String> bestelling;
     Cleaner cl = null;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +59,6 @@ public class baseActivity extends AppCompatActivity {
 
         mDrawer.addDrawerListener(mToggle);
         mToggle.syncState();
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         NavigationView mNavigationView;
@@ -89,6 +93,11 @@ public class baseActivity extends AppCompatActivity {
                         Intent intent3 = new Intent(getApplicationContext(), SettingsActivity.class);
                         startActivity(intent3);
                         intent3.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                        return true;
+                    case R.id.nav_commissies:
+                        Intent intent5 = new Intent(getApplicationContext(), CommissieActivity.class);
+                        startActivity(intent5);
+                        intent5.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                         return true;
 
                     default:
@@ -128,5 +137,19 @@ public class baseActivity extends AppCompatActivity {
     {
         super.onResume();
         cl.readSettings();
+        cl.readCommissies();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch ( requestCode ){
+            case 10:{
+                if(resultCode==RESULT_OK){
+                    String path = data.getData().getPath();
+                    cl.read_external_userfile(path);
+                }
+            }
+        }
     }
 }

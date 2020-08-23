@@ -12,6 +12,9 @@
     <item android:id="@+id/nav_users"
         android:icon="@mipmap/ic_perm_contact_calendar_black_24dp"
         android:title="Gebruikers" />
+    <item android:id="@+id/nav_commissies"
+        android:icon="@mipmap/baseline_bookmarks_black_24dp"
+        android:title="Commissies" />
     <item android:id="@+id/nav_settings"
         android:icon="@mipmap/ic_settings_black_24dp"
         android:title="Instellingen"/>

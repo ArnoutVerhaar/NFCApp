@@ -88,7 +88,6 @@ public class MainActivity extends baseActivity {
                     Toast.LENGTH_LONG).show();
         }
 
-
         //cl.write_external_userfile();
     }
 

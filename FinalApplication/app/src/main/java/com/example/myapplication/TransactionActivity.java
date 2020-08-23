@@ -20,6 +20,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
@@ -40,6 +41,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Locale;
 
 /**
@@ -52,6 +54,7 @@ public class TransactionActivity extends baseActivity {
     TransactionAdapter customAdapter = new TransactionAdapter();
     ArrayList<Integer> selectedTransactions;
     public PopupWindow popupWindow;
+    public ArrayList<String> colourArray = new ArrayList<>(Arrays.asList("#b8d8ba", "#D9DBBC", "#ef959d", "#69585f", "#97B1A6", "#C9C5BA", "#51344D", "#93BEDF", "#228CDB", "#545C52"));
 
     public interface AsyncResponse {
         void processFinish(Object output);
@@ -216,25 +219,16 @@ public class TransactionActivity extends baseActivity {
             TextView tname = (TextView)view.findViewById(R.id.txtitem);
             TextView tprize = (TextView)view.findViewById(R.id.prizeView);
             TextView tstamp = (TextView) view.findViewById(R.id.timestamp);
+            Button cColor = (Button) view.findViewById(R.id.commissieColor);
 
-            String color = "#fc5668";
-            switch (cl.transactions.get(i).getCommissie()){
-                case "HikCie":
-                    color = "#fc5668";
-                    break;
-                case "DiesCie":
-                    color = "#d3298c";
-                    break;
-                case "AmCie":
-                    color = "#5d74f1";
-                    break;
-            }
+            String color = colourArray.get(cl.commissies.indexOf(cl.transactions.get(i).getCommissie()));
             if(selectedTransactions.contains(i)){
-                view.findViewById(R.id.commissieColor).setBackgroundColor(Color.parseColor("#add8e6"));
+                cColor.setBackgroundColor(Color.parseColor("#add8e6"));
+                cColor.setText("✓");
             }else{
-                view.findViewById(R.id.commissieColor).setBackgroundColor(Color.parseColor(color));
+                cColor.setBackgroundColor(Color.parseColor(color));
+                cColor.setText(cl.transactions.get(i).getCommissie().substring(0,3));
             }
-
             tname.setText(cl.transactions.get(i).getName());
             tprize.setText("€" + String.format("%.2f",cl.transactions.get(i).getPrize()) + ",-");
             tstamp.setText(cl.transactions.get(i).getTimestamp());
@@ -368,7 +362,6 @@ public class TransactionActivity extends baseActivity {
                 text.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // TODO Auto-generated method stub
                         changeCommissieForSelected(text.getText().toString());
                         popupWindow.dismiss();
                     }

@@ -42,7 +42,6 @@ public class CommissiePopup extends AppCompatActivity {
 
     public CommissiePopup(Context fileContext, Cleaner cl, AppCompatActivity a){
         cleaner = cl;
-        //cleaner.WriteToCommissies(c);
         cleaner.readCommissies();
         if(cleaner.selectedCommissie != null){
             Log.w("selectedCommissie", cleaner.selectedCommissie);
@@ -114,7 +113,7 @@ public class CommissiePopup extends AppCompatActivity {
                 text = new TextView(mContext);
                 text.setText(cleaner.commissies.get(position));
                 text.setGravity(Gravity.CENTER_HORIZONTAL);
-                text.setTextColor(Color.WHITE);
+                text.setTextColor(Color.BLACK);
                 text.setPadding(10,30,10,30);
                 text.setTextSize(20);
                 text.setOnClickListener(new View.OnClickListener() {

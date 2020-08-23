@@ -30,6 +30,7 @@
         <activity android:name=".TransactionActivity"/>
         <activity android:name=".UsersActivity"/>
         <activity android:name=".SettingsActivity"/>
+        <activity android:name=".CommissieActivity"/>
 
     </application>
 

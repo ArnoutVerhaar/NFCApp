@@ -36,9 +36,7 @@ import java.util.ArrayList;
 
 public class SettingsActivity extends baseActivity {
     ArrayList<String> settingsArray;
-    public String email;
     public String defEmail = "defaultemail@default.com";
-    public String chipPrijs;
     public String defChipPrijs = "2.00";
     SettingsAdapter customAdapter = new SettingsAdapter();
 
@@ -56,7 +54,6 @@ public class SettingsActivity extends baseActivity {
         listview.setAdapter(customAdapter);
         customAdapter.notifyDataSetChanged();
         listview.setItemsCanFocus(true);
-
     }
 
     private void readSettingsfile() {
@@ -102,7 +99,9 @@ public class SettingsActivity extends baseActivity {
         }
     }
 
-
+    public void openFileDialog(View v){
+        cl.openFileDialog();
+    }
 
     public void WriteToSettings(){
         //settingsArray.clear();

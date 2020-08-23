@@ -8,7 +8,7 @@
     android:id="@+id/drawer_layout">
     <include layout="@layout/base_layout"/>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
         android:orientation="vertical" android:layout_width="match_parent"
         android:paddingRight="20dp"
         android:paddingLeft="20dp"
@@ -35,7 +35,9 @@
                 android:layout_height="match_parent"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true" />
+                android:layout_alignParentTop="true" >
+
+            </ListView>
 
             <TextView
                 android:id="@+id/textView3"
@@ -44,6 +46,16 @@
                 android:text="Gemaakt door: Arnout Verhaar"
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true" />
+            <Button
+                android:id="@+id/button"
+                android:onClick="openFileDialog"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_gravity="start"
+                android:layout_margin="16dp"
+                android:text="Lees Userfile" />
 
             <com.melnykov.fab.FloatingActionButton
                 android:id="@+id/setDefaults"
