@@ -230,9 +230,9 @@ public class TransactionActivity extends baseActivity {
                     break;
             }
             if(selectedTransactions.contains(i)){
-                view.setBackgroundColor(Color.parseColor("#add8e6"));
+                view.findViewById(R.id.commissieColor).setBackgroundColor(Color.parseColor("#add8e6"));
             }else{
-                view.setBackgroundColor(Color.parseColor(color));
+                view.findViewById(R.id.commissieColor).setBackgroundColor(Color.parseColor(color));
             }
 
             tname.setText(cl.transactions.get(i).getName());

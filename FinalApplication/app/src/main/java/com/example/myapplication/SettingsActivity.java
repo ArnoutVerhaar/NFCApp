@@ -90,6 +90,7 @@ public class SettingsActivity extends baseActivity {
                         settingsArray.add(defChipPrijs);
                         outputFile.write("C: "+defChipPrijs);
                     }
+
                 }
                 outputFile.flush();
                 outputFile.close();
@@ -184,6 +185,8 @@ public class SettingsActivity extends baseActivity {
                 myopt = "Email";
             else if(i == 1)
                 myopt = "Chipprijs";
+            else if(i == 2)
+                myopt = "Geselecteerde commissie";
 
             option.setText(myopt);
             value.setText(settingsArray.get(i).toString());
