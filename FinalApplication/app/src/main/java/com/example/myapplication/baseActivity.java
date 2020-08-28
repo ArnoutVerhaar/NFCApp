@@ -25,6 +25,8 @@ import java.util.ArrayList;
 
 public class baseActivity extends AppCompatActivity {
 
+
+    public String VERSION_STRING = "Versie 2.0.1";
     private DrawerLayout mDrawer;
     private ActionBarDrawerToggle mToggle;
     private Toolbar mToolbar;

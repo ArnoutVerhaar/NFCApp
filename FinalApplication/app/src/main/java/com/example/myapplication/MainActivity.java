@@ -64,6 +64,9 @@ public class MainActivity extends baseActivity {
         gridview = (GridView) findViewById(R.id.btnGrid);
         gridview.setAdapter(new ImageAdapter(this));
 
+        TextView version = (TextView) findViewById(R.id.versionText);
+        version.setText(VERSION_STRING);
+
         bestelling = new ArrayList<String>();
         cl.readUserFile();
         //cl.WriteToUserFile();
