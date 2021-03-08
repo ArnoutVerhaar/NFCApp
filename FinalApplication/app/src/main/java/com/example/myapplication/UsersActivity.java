@@ -131,13 +131,13 @@ public class UsersActivity extends baseActivity {
                 @Override
                 public void onClick(View v) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(UsersActivity.this);
-                    builder.setMessage("Email: " + cl.users.get(i).getEmail() + "\nIBAN: " +  cl.users.get(i).getIBAN() + "\nSaldo: €" + String.format(Locale.US, "%.2f",cl.users.get(i).getKosten()) + ",-")
+                    builder.setMessage("Email: " + cl.users.get(i).getEmail() + "\nSaldo: €" + String.format(Locale.US, "%.2f",cl.users.get(i).getKosten()) + ",-")
                             .setTitle(cl.users.get(i).getName());
 
                     builder.setNegativeButton("Edit", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             final String POPUP_LOGIN_TITLE="Verander Gebruiker";
-                            final String POPUP_LOGIN_TEXT="Voer naam en email en IBAN van de gebruiker in!";
+                            final String POPUP_LOGIN_TEXT="Voer naam en email van de gebruiker in!";
                             AlertDialog.Builder alert = new AlertDialog.Builder(UsersActivity.this);
 
                             alert.setTitle(POPUP_LOGIN_TITLE);
@@ -150,22 +150,17 @@ public class UsersActivity extends baseActivity {
                             final EditText email = new EditText(UsersActivity.this);
                             email.setText(cl.users.get(i).getEmail());
                             email.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-                            final EditText IBAN = new EditText(UsersActivity.this);
-                            IBAN.setText(cl.users.get(i).getIBAN());
-                            IBAN.setInputType(InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
 
                             LinearLayout layout = new LinearLayout(getApplicationContext());
                             layout.setOrientation(LinearLayout.VERTICAL);
                             layout.addView(name);
                             layout.addView(email);
-                            layout.addView(IBAN);
                             alert.setView(layout);
 
                             alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int whichButton) {
                                     cl.users.get(i).setName(name.getText().toString());
                                     cl.users.get(i).setEmail(email.getText().toString());
-                                    cl.users.get(i).setIBAN(IBAN.getText().toString());
                                     customAdapter.notifyDataSetChanged();
                                     cl.WriteToUserFile();// Do something with value!
 
