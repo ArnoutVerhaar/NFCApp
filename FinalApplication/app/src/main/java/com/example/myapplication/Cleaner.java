@@ -74,7 +74,7 @@ public class Cleaner {
             FileOutputStream file = fileContext.getApplicationContext().openFileOutput("users.txt", MODE_PRIVATE);
             OutputStreamWriter outputFile = new OutputStreamWriter(file);
             for(int i = 0; i < users.size() ; i++){
-                outputFile.write(users.get(i).getName() + "," + users.get(i).getEmail()+ "," + users.get(i).getIBAN() + ","+ users.get(i).getKosten().toString() + "," + users.get(i).getUniqueToken() + "\n");
+                outputFile.write(users.get(i).getName() + "," + users.get(i).getEmail() + "," + users.get(i).getKosten().toString() + "," + users.get(i).getUniqueToken() + "\n");
             }
             outputFile.flush();
             outputFile.close();
@@ -211,15 +211,14 @@ public class Cleaner {
                         myArray.add(tokens.nextToken());
                     }
                     Log.i("USER", myArray.toString());
-                    if(myArray.size() == 5) {
+                    if(myArray.size() == 4) {
                         try {
                             naam = myArray.get(0);
                             String email = myArray.get(1);
-                            String IBAN = myArray.get(2);
                             Double Kosten = Double.parseDouble(myArray.get(3));
                             String uniqueToken = myArray.get(4);
 
-                            Gebruiker geb = new Gebruiker(naam, email, IBAN, Kosten, uniqueToken);
+                            Gebruiker geb = new Gebruiker(naam, email, Kosten, uniqueToken);
                             users.add(geb);
                         } catch (NumberFormatException e) {
                             Toast.makeText(fileContext.getApplicationContext(), "failed to parse user: " + naam, Toast.LENGTH_SHORT).show();
@@ -288,11 +287,11 @@ public class Cleaner {
         try {
             FileOutputStream f = new FileOutputStream(file);
             PrintWriter pw = new PrintWriter(f);
-            pw.println("Naam;Saldo;IBAN;Email;UniqueToken");
+            pw.println("Naam;Saldo;Email;UniqueToken");
             //Toast.makeText(this.fileContext.getApplicationContext(), Integer.toString(users.size()), Toast.LENGTH_SHORT).show();
             for(int i =0; i < users.size(); i++){
                 //if(users.get(i).getKosten() > 0){
-                    pw.println(users.get(i).getName() + ";" + String.format(Locale.US, "%.2f",users.get(i).getKosten()) + ";" + users.get(i).getIBAN() + ";" + users.get(i).getEmail() + ";" + users.get(i).getUniqueToken());
+                    pw.println(users.get(i).getName() + ";" + String.format(Locale.US, "%.2f",users.get(i).getKosten()) + ";" + users.get(i).getEmail() + ";" + users.get(i).getUniqueToken());
                 //}
             }
             pw.flush();
@@ -368,10 +367,9 @@ public class Cleaner {
 
                         String naam = tokens.nextToken();
                         Double kosten = Double.parseDouble(tokens.nextToken());
-                        String IBAN = tokens.nextToken();
                         String email = tokens.nextToken();
                         String uniqueToken = tokens.nextToken();
-                        geb = new Gebruiker(naam, email, IBAN, kosten, uniqueToken);
+                        geb = new Gebruiker(naam, email, kosten, uniqueToken);
                         users.add(geb);
                     }
                     catch (Exception e){

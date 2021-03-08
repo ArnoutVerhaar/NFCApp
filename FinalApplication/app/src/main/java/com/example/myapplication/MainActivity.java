@@ -25,12 +25,15 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.security.ProviderInstaller;
+
+import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -81,13 +84,13 @@ public class MainActivity extends baseActivity {
             finish();
         }else if(!nfcAdapter.isEnabled()){
             Toast.makeText(this,
-                    "NFC NOT Enabled!",
+                    "Zet eerst NFC aan!",
                     Toast.LENGTH_LONG).show();
             finish();
         }
         else{
             Toast.makeText(this,
-                    "NFC is Enabled!",
+                    "NFC staat aan!",
                     Toast.LENGTH_LONG).show();
         }
 
@@ -118,6 +121,7 @@ public class MainActivity extends baseActivity {
         super.onNewIntent(intent);
         if(pay){
             Gebruiker foundUser = null;
+            pay = false;
             Tag myTag = (Tag) intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             if(myTag != null) {
 
@@ -155,12 +159,21 @@ public class MainActivity extends baseActivity {
         final EditText email = new EditText(this);
         email.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
         email.setHint("  Email");
-        final EditText IBAN = new EditText(this);
-        IBAN.setInputType(InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
-        IBAN.setHint("  IBAN");
+        final TextView hintText = new TextView(this);
+        hintText.setText("Let op: gebruik zelfde email als bekend in bij Sola");
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        layoutParams.setMargins(80, 0, 80, 50);
+
+        FrameLayout.LayoutParams layoutParams2 = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        layoutParams2.setMargins(50, 0, 50, 0);
+
+        hintText.setLayoutParams(layoutParams);
+        email.setLayoutParams(layoutParams2);
+        name.setLayoutParams(layoutParams2);
         final CheckBox buyChip = new CheckBox(this);
-        buyChip.setText("Koop de chip voor \u20ac"+ cl.settings.get(1) + ",-");
+        buyChip.setText("Koop de kaart voor \u20ac"+ cl.settings.get(1) + ",-");
         buyChip.setTextSize(18);
+        buyChip.setLayoutParams(layoutParams2);
 
 
 
@@ -168,7 +181,7 @@ public class MainActivity extends baseActivity {
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.addView(name);
         layout.addView(email);
-        layout.addView(IBAN);
+        layout.addView(hintText);
         layout.addView(buyChip);
         alert.setView(layout);
 
@@ -179,21 +192,21 @@ public class MainActivity extends baseActivity {
                 //getAlbumStorageDir("Hickie");
                 Double startBudget;
                 ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
-                if(!name.getText().toString().matches("") || !email.getText().toString().matches("") || !IBAN.getText().toString().matches("")) {
+                if(!name.getText().toString().matches("") || !email.getText().toString().matches("")) {
                     if((buyChip.isChecked())){
                         startBudget = Double.parseDouble(cl.settings.get(1));
                     }
                     else{
                         startBudget = 0.00;
                     }
-                    newUser = new Gebruiker(name.getText().toString(), email.getText().toString(), IBAN.getText().toString(), startBudget, uniqueID);
+                    newUser = new Gebruiker(name.getText().toString(), email.getText().toString(), startBudget, uniqueID);
 
                     cl.users.add(newUser);
-                    Toast.makeText(getApplicationContext(), "User saved", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Gebruiker aangemaakt!", Toast.LENGTH_SHORT).show();
                     //WriteToUserFile();// Do something with value!
                     WriteTransaction(newUser,totalPrize,true,startBudget);
                 }else{
-                    Toast.makeText(getApplicationContext(), "Something went wrong. Try Again!!!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Er is iets misgegaan. Probeer opnieuw!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -237,7 +250,7 @@ public class MainActivity extends baseActivity {
         try{
             FileOutputStream file = openFileOutput("transactions.txt", MODE_PRIVATE);
             OutputStreamWriter outputFile = new OutputStreamWriter(file);
-            Toast.makeText(getApplicationContext(), "Added to: " + cl.transactions.get(0).getName(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Voor: " + cl.transactions.get(0).getName(), Toast.LENGTH_SHORT).show();
 
             for(int i = 0 ; i < cl.transactions.size() ; i++){
 

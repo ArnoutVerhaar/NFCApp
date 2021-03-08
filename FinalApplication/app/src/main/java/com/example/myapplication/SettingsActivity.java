@@ -132,10 +132,10 @@ public class SettingsActivity extends baseActivity {
         builder.setTitle("Terugzetten Standaardinstellingen?");
         builder.setMessage("Alle standaardwaardes worden gereset!");
 
-        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("JA", new DialogInterface.OnClickListener() {
 
             public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(getApplicationContext(), "Defaults restored!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Standaardwaarden hersteld!", Toast.LENGTH_SHORT).show();
                 deleteFile("settings.txt");
                 readSettingsfile();
                 customAdapter.notifyDataSetChanged();
@@ -143,7 +143,7 @@ public class SettingsActivity extends baseActivity {
             }
         });
 
-        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton("NEE", new DialogInterface.OnClickListener() {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -222,7 +222,7 @@ public class SettingsActivity extends baseActivity {
                             return;
                         case 1:
                             AlertDialog.Builder alert = new AlertDialog.Builder(SettingsActivity.this);
-                            alert.setTitle("Verander chipprijs!");
+                            alert.setTitle("Verander kaartprijs!");
                             final EditText prize = new EditText(SettingsActivity.this);
                             prize.setText(settingsArray.get(1));
                             prize.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED);

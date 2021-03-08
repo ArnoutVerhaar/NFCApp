@@ -88,7 +88,7 @@ public class TransactionActivity extends baseActivity {
             @Override
             public void processFinish(Object output) {
             String str = (String) output;
-            if(str.equals("successfully inserted ")){
+            if(str.equals("200")){
                 cl.deleteTransactions();
                 cl.clearUsers();
                 findViewById(R.id.sendmail).setEnabled(true);
@@ -147,28 +147,12 @@ public class TransactionActivity extends baseActivity {
 
     public JSONObject createJSONobject(ArrayList<Gebruiker> clUsers, ArrayList<Transaction> clTransactions){
         JSONObject myJson = new JSONObject();
-        JSONArray userArray = new JSONArray();
-        for (Gebruiker user : clUsers) {
-            if(user.getKosten() > 0){
-                JSONObject myUser = new JSONObject();
-                try {
-                    myUser.put("naam", user.getName());
-                    myUser.put("email", user.getEmail());
-                    myUser.put("iban", user.getIBAN());
-                    myUser.put("price", user.getKosten());
-                    myUser.put("uniqueToken", user.getUniqueToken());
-                    userArray.put(myUser);
-                }catch (JSONException e){
-                    e.printStackTrace();
-                }
-            }
-        }
         JSONArray transactionArray = new JSONArray();
         for (Transaction trans : clTransactions) {
             JSONObject myTrans = new JSONObject();
             try {
-                myTrans.put("naam", trans.getName());
-                myTrans.put("order", trans.getOrder().replace("'",""));
+                myTrans.put("name", trans.getName());
+                myTrans.put("ordertext", trans.getOrder().replace("'",""));
                 myTrans.put("price", trans.getPrize());
                 myTrans.put("timestamp", trans.getTimestamp());
                 myTrans.put("email", trans.getEmail());
@@ -179,7 +163,6 @@ public class TransactionActivity extends baseActivity {
             }
         }
         try {
-            myJson.put("users", userArray);
             myJson.put("transactions", transactionArray);
             myJson.put("password", "8jm0aVBRCS92RBiLGaqt");
         }catch(JSONException e){
@@ -287,40 +270,50 @@ public class TransactionActivity extends baseActivity {
 
         @Override
         protected Object doInBackground(Object... params) {
-        String json_response = "";
+        int status = 0;
                 try {
-                    URL url = new URL("https://www.sola-scriptura.nl/barmobiel.php"); //Enter URL here
+                    URL url = new URL("https://api.csfrutrecht.nl/v1/barmobiel/postTransactions"); //Enter URL here
+                    //URL url = new URL("http://192.168.1.48/api/v1/barmobiel/postTransactions"); //Enter URL here
                     HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
                     httpURLConnection.setDoOutput(true);
                     httpURLConnection.setRequestMethod("POST"); // here you are telling that it is a POST request, which can be changed into "PUT", "GET", "DELETE" etc.
-                    httpURLConnection.setRequestProperty("Content-Type", "application/json"); // here you are setting the `Content-Type` for the data you are sending which is `application/json`
+                    httpURLConnection.setRequestProperty("Content-Type", "application/json; utf-8"); // here you are setting the `Content-Type` for the data you are sending which is `application/json`
+                    httpURLConnection.setRequestProperty("Accept", "application/json");
                     httpURLConnection.connect();
                     DataOutputStream wr = new DataOutputStream(httpURLConnection.getOutputStream());
                     Log.d("Response:", json.toString());
-                    wr.writeBytes(json.toString());
+                    wr.write(json.toString().getBytes("utf-8"));
                     wr.flush();
                     wr.close();
 
                     InputStream inputStream;
-                    int status = httpURLConnection.getResponseCode();
+                    status = httpURLConnection.getResponseCode();
 
-                    if (status != HttpURLConnection.HTTP_OK)
+                    Log.i("outputFromCall", Integer.toString(status));
+                    if (status != 200)
                         inputStream = httpURLConnection.getErrorStream();
-                    else
+                    else {
                         inputStream = httpURLConnection.getInputStream();
+                    }
 
                     InputStreamReader in = new InputStreamReader(inputStream);
                     BufferedReader br = new BufferedReader(in);
-                    json_response += br.readLine();
+
+                    StringBuilder response = new StringBuilder();
+                    String responseLine = null;
+                    while ((responseLine = br.readLine()) != null) {
+                        response.append(responseLine.trim());
+                    }
+                    System.out.println(response.toString());
                     httpURLConnection.disconnect();
+                    Log.i("outputFromCall", response.toString());
 
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            return json_response;
-
+            return Integer.toString(status);
         }
 
         @Override
