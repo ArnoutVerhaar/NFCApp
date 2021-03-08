@@ -205,17 +205,28 @@ public class Cleaner {
                 int counter = 0;
                 while ((lineFromFile = reader.readLine())!= null){
                     StringTokenizer tokens = new StringTokenizer(lineFromFile, ",");
-                    try {
-                        naam = tokens.nextToken();
-                        String email = tokens.nextToken();
-                        String IBAN = tokens.nextToken();
-                        Double Kosten = Double.parseDouble(tokens.nextToken());
-                        String uniqueToken = tokens.nextToken();
 
-                        Gebruiker geb = new Gebruiker(naam, email, IBAN, Kosten, uniqueToken);
-                        users.add(geb);
-                    }catch(NumberFormatException e){
-                        Toast.makeText(fileContext.getApplicationContext(), "failed to parse user: " + naam, Toast.LENGTH_SHORT).show();
+                    ArrayList<String> myArray = new ArrayList<String>();
+                    while (tokens.hasMoreTokens()){
+                        myArray.add(tokens.nextToken());
+                    }
+                    Log.i("USER", myArray.toString());
+                    if(myArray.size() == 5) {
+                        try {
+                            naam = myArray.get(0);
+                            String email = myArray.get(1);
+                            String IBAN = myArray.get(2);
+                            Double Kosten = Double.parseDouble(myArray.get(3));
+                            String uniqueToken = myArray.get(4);
+
+                            Gebruiker geb = new Gebruiker(naam, email, IBAN, Kosten, uniqueToken);
+                            users.add(geb);
+                        } catch (NumberFormatException e) {
+                            Toast.makeText(fileContext.getApplicationContext(), "failed to parse user: " + naam, Toast.LENGTH_SHORT).show();
+                            e.printStackTrace();
+                        }
+                    }else{
+                        Toast.makeText(fileContext.getApplicationContext(), "failed to parse user: " + myArray.toString(), Toast.LENGTH_SHORT).show();
                     }
                     counter++;
                 }
@@ -234,7 +245,9 @@ public class Cleaner {
             try{
                 BufferedReader reader = new BufferedReader(new InputStreamReader(fileContext.getApplicationContext().openFileInput("transactions.txt")));
                 while ((lineFromFile = reader.readLine())!= null){
+
                     StringTokenizer tokens = new StringTokenizer(lineFromFile, ",");
+
                     try {
                         Transaction trans = new Transaction(tokens.nextToken(), tokens.nextToken(), Double.parseDouble(tokens.nextToken()), tokens.nextToken(), tokens.nextToken(), tokens.nextToken());
                         transactions.add(trans);
@@ -296,6 +309,7 @@ public class Cleaner {
 
     }
     public void write_external_transactionfile(){
+        readTransactionfile();
         File root = android.os.Environment.getExternalStorageDirectory();
         // See http://stackoverflow.com/questions/3551821/android-write-to-sd-card-folder
 

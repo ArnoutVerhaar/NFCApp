@@ -178,6 +178,7 @@ public class MainActivity extends baseActivity {
                 //fragment_obj.outputList.setText("For: " + name.getText().toString() + " with email = " + email.getText().toString());
                 //getAlbumStorageDir("Hickie");
                 Double startBudget;
+                ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
                 if(!name.getText().toString().matches("") || !email.getText().toString().matches("") || !IBAN.getText().toString().matches("")) {
                     if((buyChip.isChecked())){
                         startBudget = Double.parseDouble(cl.settings.get(1));
